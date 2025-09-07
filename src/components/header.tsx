@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Stethoscope, Workflow } from 'lucide-react';
+import { Pill, Stethoscope, Workflow } from 'lucide-react';
 import { Button } from './ui/button';
 
 export function Header() {
@@ -13,7 +13,13 @@ export function Header() {
               Medi-OSINT
             </h1>
           </Link>
-          <nav>
+          <nav className="flex items-center gap-2">
+            <Button variant="ghost" asChild>
+              <Link href="/symptom-checker">
+                <Pill className="mr-2 h-4 w-4" />
+                Symptom Checker
+              </Link>
+            </Button>
             <Button variant="ghost" asChild>
               <Link href="/osint-framework">
                 <Workflow className="mr-2 h-4 w-4" />

@@ -1,7 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { ForceGraph2D } from 'react-force-graph-2d';
+import React from 'react';
+import dynamic from 'next/dynamic';
+
+const ForceGraph2D = dynamic(() => import('react-force-graph-2d').then(module => module.default), {
+  ssr: false,
+});
 
 const osintData = {
   nodes: [
@@ -78,44 +82,40 @@ const osintData = {
 };
 
 export const OsintGraph = () => {
-    const [isClient, setIsClient] = useState(false);
-
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    if (!isClient) {
-        return null;
-    }
-
     return (
         <ForceGraph2D
             graphData={osintData}
             nodeLabel="name"
             nodeCanvasObject={(node, ctx, globalScale) => {
-                const label = node.name;
-                const fontSize = (node.val || 10) / globalScale * 1.5;
+                const label = node.name as string;
+                const fontSize = (node.val as number || 10) / globalScale * 1.5;
                 ctx.font = `${fontSize}px Sans-Serif`;
                 const textWidth = ctx.measureText(label).width;
                 const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.2); // some padding
 
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, bckgDimensions[0], bckgDimensions[1]);
-
+                if (node.x !== undefined && node.y !== undefined) {
+                    ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, bckgDimensions[0], bckgDimensions[1]);
+                }
+                
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillStyle = 'blue';
-                ctx.fillText(label, node.x, node.y);
+                if (node.x !== undefined && node.y !== undefined) {
+                    ctx.fillText(label, node.x, node.y);
+                }
             }}
             nodePointerAreaPaint={(node, color, ctx) => {
-                const label = node.name;
-                const fontSize = (node.val || 10) / 1 * 1.5;
+                const label = node.name as string;
+                const fontSize = (node.val as number || 10) / 1 * 1.5;
                 ctx.font = `${fontSize}px Sans-Serif`;
                 const textWidth = ctx.measureText(label).width;
                 const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.2); // some padding
                 
                 ctx.fillStyle = color;
-                ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, bckgDimensions[0], bckgDimensions[1]);
+                if (node.x !== undefined && node.y !== undefined) {
+                    ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, bckgDimensions[0], bckgDimensions[1]);
+                }
               }}
             linkColor={() => 'rgba(0,0,0,0.2)'}
             linkWidth={1}

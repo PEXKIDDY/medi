@@ -213,7 +213,7 @@ export default function DoctorFlowchart() {
                       <div className="flex-grow">
                         <p className="font-semibold text-lg">{doc.name}</p>
                         <p className="text-sm text-muted-foreground">{doc.degree}</p>
-                        <Link href={doc.locationUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:underline">
+                        <Link href={doc.locationUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
                           {doc.clinic}
                         </Link>
                         {nearbyEnabled && location && (doc as any).distance !== undefined && (

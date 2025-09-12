@@ -1,11 +1,12 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { Stethoscope, Heart, Brain, Bone, Baby, Hand, LocateFixed, WifiOff } from 'lucide-react';
+import { Stethoscope, Heart, Brain, Bone, Baby, Hand, LocateFixed, WifiOff, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useGeolocation } from '@/hooks/use-geolocation';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Helper function to calculate distance (Haversine formula)
 const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -96,15 +97,22 @@ const initialSpecializations = [
 
 export default function DoctorFlowchart() {
   const [nearbyEnabled, setNearbyEnabled] = useState(false);
-  const { location, error, getLocation } = useGeolocation();
+  const { location, error, getLocation, clearError } = useGeolocation();
   const [specializations, setSpecializations] = useState(initialSpecializations);
 
   const handleToggle = (checked: boolean) => {
     setNearbyEnabled(checked);
+    clearError();
     if (checked) {
       getLocation();
     }
   };
+  
+  useEffect(() => {
+    if (error) {
+      setNearbyEnabled(false);
+    }
+  }, [error]);
 
   useEffect(() => {
     if (nearbyEnabled && location) {
@@ -134,7 +142,7 @@ export default function DoctorFlowchart() {
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4 md:p-8">
-      <div className="flex justify-between items-start mb-12">
+      <div className="flex justify-between items-start mb-6">
         <div className="text-center flex-grow">
           <div className="inline-block bg-primary text-primary-foreground rounded-full p-4 mb-4">
             <Stethoscope className="h-12 w-12" />
@@ -152,7 +160,13 @@ export default function DoctorFlowchart() {
           </Label>
         </div>
       </div>
-       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+       {error && (
+         <Alert variant="destructive" className="mb-8">
+           <AlertCircle className="h-4 w-4" />
+           <AlertTitle>Location Error</AlertTitle>
+           <AlertDescription>{error}</AlertDescription>
+         </Alert>
+       )}
 
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -32,16 +32,16 @@ export function useGeolocation() {
       (err) => {
         switch(err.code) {
           case err.PERMISSION_DENIED:
-            setError("You denied the request for Geolocation.");
+            setError("You denied permission to access your location. Please enable location permissions in your browser settings to use this feature.");
             break;
           case err.POSITION_UNAVAILABLE:
-            setError("Location information is unavailable.");
+            setError("Your location information is currently unavailable. Please ensure your device's location service is enabled and try again.");
             break;
           case err.TIMEOUT:
-            setError("The request to get user location timed out.");
+            setError("The request to get your location timed out. Please check your network connection and try again.");
             break;
           default:
-            setError("An unknown error occurred.");
+            setError("An unknown error occurred while trying to get your location.");
             break;
         }
         setLoading(false);
@@ -49,5 +49,9 @@ export function useGeolocation() {
     );
   };
 
-  return { location, error, loading, getLocation };
+  const clearError = () => {
+    setError(null);
+  }
+
+  return { location, error, loading, getLocation, clearError };
 }

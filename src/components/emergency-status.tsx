@@ -17,13 +17,12 @@ export default function EmergencyStatus() {
   const [currentDistance, setCurrentDistance] = useState<number>(INITIAL_DISTANCE_KM);
 
   useEffect(() => {
-    // Function to fetch updates from the AI
     const fetchUpdate = async (distance: number) => {
       setIsFetchingUpdate(true);
       try {
         const time = distance / AVG_SPEED_KM_PER_MIN;
         const newUpdate = await getEmergencyUpdates({ distance, time });
-        setUpdates(prev => [newUpdate, ...prev.slice(0, 4)]); // Keep last 5 updates
+        setUpdates(prev => [newUpdate, ...prev.slice(0, 4)]);
       } catch (e) {
         console.error("Failed to get emergency update:", e);
       } finally {
@@ -31,24 +30,18 @@ export default function EmergencyStatus() {
       }
     };
 
-    // Initial fetch
     fetchUpdate(currentDistance);
 
-    // Set up an interval to simulate progress and fetch new updates
     const intervalId = setInterval(() => {
       setCurrentDistance(prevDistance => {
-        const newDistance = Math.max(0, prevDistance - (AVG_SPEED_KM_PER_MIN * (10/60))); // Simulate 10 seconds of travel
-        
-        // Fetch a new update based on the new distance
-        fetchUpdate(newDistance);
-        
-        if (newDistance === 0) {
-          clearInterval(intervalId); // Stop when arrived
+        const newDistance = Math.max(0, prevDistance - (AVG_SPEED_KM_PER_MIN * (10 / 60)));
+        if (newDistance <= 0) {
+          clearInterval(intervalId);
         }
-        
+        fetchUpdate(newDistance);
         return newDistance;
       });
-    }, 10000); // Update every 10 seconds
+    }, 10000);
 
     return () => clearInterval(intervalId);
   }, []);

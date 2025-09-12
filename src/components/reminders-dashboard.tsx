@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -8,10 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Pill, Calendar, GlassWater, PlusCircle, Trash2 } from 'lucide-react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { Pill, Calendar, GlassWater, PlusCircle, Trash2, BellRing } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+
 
 // Schemas for form validation
 const medicationSchema = z.object({
@@ -34,6 +36,8 @@ const hydrationSchema = z.object({
 type Medication = z.infer<typeof medicationSchema> & { id: number; taken: boolean };
 type Appointment = z.infer<typeof appointmentSchema> & { id: number };
 type Hydration = z.infer<typeof hydrationSchema> & { id: number; taken: boolean };
+type ActiveAlarm = { type: 'med' | 'hydro', id: number, name: string } | null;
+
 
 export default function RemindersDashboard() {
   const [medications, setMedications] = useState<Medication[]>([
@@ -56,6 +60,59 @@ export default function RemindersDashboard() {
   const [isMedDialogOpen, setMedDialogOpen] = useState(false);
   const [isApptDialogOpen, setApptDialogOpen] = useState(false);
   const [isHydroDialogOpen, setHydroDialogOpen] = useState(false);
+  const [activeAlarm, setActiveAlarm] = useState<ActiveAlarm>(null);
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Initialize Audio on client
+    if (typeof window !== 'undefined') {
+        audioRef.current = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
+        audioRef.current.loop = true;
+    }
+
+    const checkReminders = () => {
+        if (activeAlarm) return; // Don't check for new alarms if one is already active
+
+        const now = new Date();
+        const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        
+        const dueMedication = medications.find(m => m.time === currentTime && !m.taken);
+        if (dueMedication) {
+            setActiveAlarm({ type: 'med', id: dueMedication.id, name: `${dueMedication.name} (${dueMedication.dosage})` });
+            return;
+        }
+
+        const dueHydration = hydration.find(h => h.time === currentTime && !h.taken);
+        if (dueHydration) {
+            setActiveAlarm({ type: 'hydro', id: dueHydration.id, name: `${dueHydration.amount} of water` });
+            return;
+        }
+    };
+    
+    // Check every minute
+    const intervalId = setInterval(checkReminders, 60000);
+
+    return () => clearInterval(intervalId);
+  }, [medications, hydration, activeAlarm]);
+  
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (activeAlarm && audio) {
+        audio.play().catch(e => console.error("Audio playback failed:", e));
+    } else if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+    }
+    
+    return () => {
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    }
+  }, [activeAlarm]);
+
 
   const addMedication = (data: z.infer<typeof medicationSchema>) => {
     setMedications([...medications, { ...data, id: Date.now(), taken: false }]);
@@ -88,6 +145,15 @@ export default function RemindersDashboard() {
     if (type === 'appt') setAppointments(appointments.filter(a => a.id !== id));
     if (type === 'hydro') setHydration(hydration.filter(h => h.id !== id));
   }
+  
+  const handleAlarmAction = (markAsTaken: boolean) => {
+    if (activeAlarm) {
+        if (markAsTaken) {
+            toggleTaken(activeAlarm.id, activeAlarm.type);
+        }
+        setActiveAlarm(null);
+    }
+  }
 
 
   return (
@@ -98,6 +164,22 @@ export default function RemindersDashboard() {
           Stay organized and on top of your health schedule.
         </p>
       </div>
+       {activeAlarm && (
+            <AlertDialog open={!!activeAlarm} onOpenChange={() => {}}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2"><BellRing className="text-primary animate-bounce"/>Reminder: It's Time!</AlertDialogTitle>
+                        <AlertDialogDescription className="text-lg pt-4">
+                            It's time for your reminder: <strong>{activeAlarm.name}</strong>.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => handleAlarmAction(false)}>Dismiss</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleAlarmAction(true)}>Mark as Taken</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        )}
       <Tabs defaultValue="medication" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="medication"><Pill className="mr-2"/>Medication</TabsTrigger>
@@ -276,3 +358,5 @@ export default function RemindersDashboard() {
     </div>
   );
 }
+
+    

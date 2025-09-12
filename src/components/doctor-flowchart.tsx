@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Stethoscope, Heart, Brain, Bone, Baby, Hand, LocateFixed, WifiOff, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -31,45 +32,45 @@ const initialSpecializations = [
     name: 'Cardiology',
     icon: <Heart className="h-8 w-8 text-red-500" />,
     doctors: [
-      { name: 'Dr. Priya Sharma', degree: 'MD, Cardiology', avatar: 'PS', clinic: 'Apollo Hospitals', lat: 12.9716, lon: 77.5946 }, // Bangalore
-      { name: 'Dr. Rohan Mehra', degree: 'DM, Cardiology', avatar: 'RM', clinic: 'Fortis Malar', lat: 13.0827, lon: 80.2707 }, // Chennai
-      { name: 'Dr. Ananya Reddy', degree: 'MD, DNB', avatar: 'AR', clinic: 'Care Hospitals', lat: 17.3850, lon: 78.4867 }, // Hyderabad
+      { name: 'Dr. Priya Sharma', degree: 'MD, Cardiology', avatar: 'PS', clinic: 'Apollo Hospitals', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Hospitals+Bangalore' }, 
+      { name: 'Dr. Rohan Mehra', degree: 'DM, Cardiology', avatar: 'RM', clinic: 'Fortis Malar', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Fortis+Malar+Hospital+Chennai' },
+      { name: 'Dr. Ananya Reddy', degree: 'MD, DNB', avatar: 'AR', clinic: 'Care Hospitals', lat: 17.3850, lon: 78.4867, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Care+Hospitals+Banjara+Hills+Hyderabad' },
     ],
   },
   {
     name: 'Neurology',
     icon: <Brain className="h-8 w-8 text-purple-500" />,
     doctors: [
-      { name: 'Dr. Vikram Singh', degree: 'DM, Neurology', avatar: 'VS', clinic: 'Manipal Hospital', lat: 12.9716, lon: 77.5946 }, // Bangalore
-      { name: 'Dr. Sneha Patel', degree: 'MD, Neurology', avatar: 'SP', clinic: 'Global Hospitals', lat: 13.0827, lon: 80.2707 }, // Chennai
-      { name: 'Dr. Arjun Kumar', degree: 'MBBS, DNB', avatar: 'AK', clinic: 'Yashoda Hospitals', lat: 17.3850, lon: 78.4867 }, // Hyderabad
+      { name: 'Dr. Vikram Singh', degree: 'DM, Neurology', avatar: 'VS', clinic: 'Manipal Hospital', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Manipal+Hospital+Old+Airport+Road+Bangalore' }, 
+      { name: 'Dr. Sneha Patel', degree: 'MD, Neurology', avatar: 'SP', clinic: 'Global Hospitals', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Global+Hospital+Perumbakkam+Chennai' },
+      { name: 'Dr. Arjun Kumar', degree: 'MBBS, DNB', avatar: 'AK', clinic: 'Yashoda Hospitals', lat: 17.3850, lon: 78.4867, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Yashoda+Hospitals+Somajiguda+Hyderabad' },
     ],
   },
   {
     name: 'Orthopedics',
     icon: <Bone className="h-8 w-8 text-gray-500" />,
     doctors: [
-      { name: 'Dr. Divya Rao', degree: 'MS, Ortho', avatar: 'DR', clinic: 'Sakra World Hospital', lat: 12.9716, lon: 77.5946 }, // Bangalore
-      { name: 'Dr. Karthik Rajan', degree: 'MS, DNB', avatar: 'KR', clinic: 'MIOT International', lat: 13.0827, lon: 80.2707 }, // Chennai
-      { name: 'Dr. Pooja Desai', degree: 'MS, Ortho', avatar: 'PD', clinic: 'Sunshine Hospitals', lat: 17.3850, lon: 78.4867 }, // Hyderabad
+      { name: 'Dr. Divya Rao', degree: 'MS, Ortho', avatar: 'DR', clinic: 'Sakra World Hospital', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sakra+World+Hospital+Bangalore' },
+      { name: 'Dr. Karthik Rajan', degree: 'MS, DNB', avatar: 'KR', clinic: 'MIOT International', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=MIOT+International+Chennai' },
+      { name: 'Dr. Pooja Desai', degree: 'MS, Ortho', avatar: 'PD', clinic: 'Sunshine Hospitals', lat: 17.3850, lon: 78.4867, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sunshine+Hospitals+Secunderabad+Hyderabad' },
     ],
   },
   {
     name: 'Dermatology',
     icon: <Hand className="h-8 w-8 text-pink-500" />,
     doctors: [
-        { name: 'Dr. Aisha Khan', degree: 'MD, Dermatology', avatar: 'AK', clinic: 'Cutis Clinic', lat: 12.9716, lon: 77.5946 }, // Bangalore
-        { name: 'Dr. Mohan Kumar', degree: 'MBBS, DDVL', avatar: 'MK', clinic: 'Kaya Skin Clinic', lat: 13.0827, lon: 80.2707 }, // Chennai
-        { name: 'Dr. Sunita Reddy', degree: 'MD, DVL', avatar: 'SR', clinic: 'Olivia Skin & Hair', lat: 17.3850, lon: 78.4867 }, // Hyderabad
+        { name: 'Dr. Aisha Khan', degree: 'MD, Dermatology', avatar: 'AK', clinic: 'Cutis Clinic', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Cutis+Clinic+Bangalore' },
+        { name: 'Dr. Mohan Kumar', degree: 'MBBS, DDVL', avatar: 'MK', clinic: 'Kaya Skin Clinic', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Kaya+Skin+Clinic+Chennai' },
+        { name: 'Dr. Sunita Reddy', degree: 'MD, DVL', avatar: 'SR', clinic: 'Olivia Skin & Hair', lat: 17.3850, lon: 78.4867, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Olivia+Skin+Hair+Clinic+Hyderabad' },
     ],
   },
   {
     name: 'Pediatrics',
     icon: <Baby className="h-8 w-8 text-blue-500" />,
     doctors: [
-        { name: 'Dr. Rajesh Nair', degree: 'MD, Pediatrics', avatar: 'RN', clinic: 'Rainbow Children\'s Hospital', lat: 12.9716, lon: 77.5946 }, // Bangalore
-        { name: 'Dr. Meena Iyer', degree: 'DNB, Pediatrics', avatar: 'MI', clinic: 'Kanchi Kamakoti Childs Trust', lat: 13.0827, lon: 80.2707 }, // Chennai
-        { name: 'Dr. Sameer Ahmed', degree: 'MD, Pediatrics', avatar: 'SA', clinic: 'Lotus Children\'s Hospital', lat: 17.3850, lon: 78.4867 }, // Hyderabad
+        { name: 'Dr. Rajesh Nair', degree: 'MD, Pediatrics', avatar: 'RN', clinic: 'Rainbow Children\'s Hospital', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Rainbow+Childrens+Hospital+Bangalore' },
+        { name: 'Dr. Meena Iyer', degree: 'DNB, Pediatrics', avatar: 'MI', clinic: 'Kanchi Kamakoti Childs Trust', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Kanchi+Kamakoti+Childs+Trust+Hospital+Chennai' },
+        { name: 'Dr. Sameer Ahmed', degree: 'MD, Pediatrics', avatar: 'SA', clinic: 'Lotus Children\'s Hospital', lat: 17.3850, lon: 78.4867, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Lotus+Childrens+Hospital+Hyderabad' },
     ],
   },
   {
@@ -89,9 +90,9 @@ const initialSpecializations = [
       </svg>
     ),
     doctors: [
-        { name: 'Dr. Fatima Ali', degree: 'BDS, MDS', avatar: 'FA', clinic: 'Apollo White Dental', lat: 12.9716, lon: 77.5946 }, // Bangalore
-        { name: 'Dr. Anand Kumar', degree: 'BDS', avatar: 'AK', clinic: 'Axiss Dental', lat: 13.0827, lon: 80.2707 }, // Chennai
-        { name: 'Dr. Lakshmi Rao', degree: 'BDS, MDS', avatar: 'LR', clinic: 'FMS Dental', lat: 17.3850, lon: 78.4867 }, // Hyderabad
+        { name: 'Dr. Fatima Ali', degree: 'BDS, MDS', avatar: 'FA', clinic: 'Apollo White Dental', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+White+Dental+Bangalore' },
+        { name: 'Dr. Anand Kumar', degree: 'BDS', avatar: 'AK', clinic: 'Axiss Dental', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Axiss+Dental+Chennai' },
+        { name: 'Dr. Lakshmi Rao', degree: 'BDS, MDS', avatar: 'LR', clinic: 'FMS Dental', lat: 17.3850, lon: 78.4867, locationUrl: 'https://www.google.com/maps/search/?api=1&query=FMS+Dental+Hyderabad' },
     ],
   },
 ];
@@ -212,7 +213,9 @@ export default function DoctorFlowchart() {
                       <div className="flex-grow">
                         <p className="font-semibold text-lg">{doc.name}</p>
                         <p className="text-sm text-muted-foreground">{doc.degree}</p>
-                        <p className="text-sm text-muted-foreground">{doc.clinic}</p>
+                        <Link href={doc.locationUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:underline">
+                          {doc.clinic}
+                        </Link>
                         {nearbyEnabled && location && (doc as any).distance !== undefined && (
                           <p className="text-xs text-blue-500">
                             ~{Math.round((doc as any).distance)} km away

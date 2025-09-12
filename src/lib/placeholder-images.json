@@ -1,109 +1,22 @@
 {
   "doctor-avatars": {
-    "Dr. Evelyn Reed": {
-      "seed": "101",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Samuel Cruz": {
-      "seed": "102",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Ben Carter": {
-      "seed": "103",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Olivia Kim": {
-      "seed": "104",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Eleanor Vance": {
-      "seed": "105",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Marcus Thorne": {
-      "seed": "106",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Isaac Chen": {
-      "seed": "107",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Sofia Garcia": {
-      "seed": "108",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Clara Oswald": {
-      "seed": "109",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Julian Bashir": {
-      "seed": "110",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Leo Fitz": {
-      "seed": "111",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Jemma Simmons": {
-      "seed": "112",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Iris West": {
-      "seed": "113",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Barry Allen": {
-      "seed": "114",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Caitlin Snow": {
-      "seed": "115",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Leslie Thompkins": {
-      "seed": "116",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Alistair Gordon": {
-      "seed": "117",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Kara Danvers": {
-      "seed": "118",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. John Smith": {
-      "seed": "119",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Jane Doe": {
-      "seed": "120",
-      "width": 150,
-      "height": 150
-    },
-    "Dr. Clark Kent": {
-      "seed": "121",
-      "width": 150,
-      "height": 150
-    }
+    "Dr. Priya Sharma": { "seed": "122", "width": 150, "height": 150 },
+    "Dr. Rohan Mehra": { "seed": "123", "width": 150, "height": 150 },
+    "Dr. Ananya Reddy": { "seed": "124", "width": 150, "height": 150 },
+    "Dr. Vikram Singh": { "seed": "125", "width": 150, "height": 150 },
+    "Dr. Sneha Patel": { "seed": "126", "width": 150, "height": 150 },
+    "Dr. Arjun Kumar": { "seed": "127", "width": 150, "height": 150 },
+    "Dr. Divya Rao": { "seed": "128", "width": 150, "height": 150 },
+    "Dr. Karthik Rajan": { "seed": "129", "width": 150, "height": 150 },
+    "Dr. Pooja Desai": { "seed": "130", "width": 150, "height": 150 },
+    "Dr. Aisha Khan": { "seed": "131", "width": 150, "height": 150 },
+    "Dr. Mohan Kumar": { "seed": "132", "width": 150, "height": 150 },
+    "Dr. Sunita Reddy": { "seed": "133", "width": 150, "height": 150 },
+    "Dr. Rajesh Nair": { "seed": "134", "width": 150, "height": 150 },
+    "Dr. Meena Iyer": { "seed": "135", "width": 150, "height": 150 },
+    "Dr. Sameer Ahmed": { "seed": "136", "width": 150, "height": 150 },
+    "Dr. Fatima Ali": { "seed": "137", "width": 150, "height": 150 },
+    "Dr. Anand Kumar": { "seed": "138", "width": 150, "height": 150 },
+    "Dr. Lakshmi Rao": { "seed": "139", "width": 150, "height": 150 }
   }
 }

@@ -31,48 +31,45 @@ const initialSpecializations = [
     name: 'Cardiology',
     icon: <Heart className="h-8 w-8 text-red-500" />,
     doctors: [
-      { name: 'Dr. Evelyn Reed', avatar: 'ER', clinic: 'Heartbeat Clinic', lat: 34.0522, lon: -118.2437 }, // LA
-      { name: 'Dr. Samuel Cruz', avatar: 'SC', clinic: 'Vascular Center', lat: 40.7128, lon: -74.0060 }, // NYC
-      { name: 'Dr. Ben Carter', avatar: 'BC', clinic: 'CardioCare', lat: 34.0522, lon: -118.2437 }, // LA
-      { name: 'Dr. Olivia Kim', avatar: 'OK', clinic: 'City Heart', lat: 41.8781, lon: -87.6298 }, // Chicago
+      { name: 'Dr. Priya Sharma', avatar: 'PS', clinic: 'Apollo Hospitals', lat: 12.9716, lon: 77.5946 }, // Bangalore
+      { name: 'Dr. Rohan Mehra', avatar: 'RM', clinic: 'Fortis Malar', lat: 13.0827, lon: 80.2707 }, // Chennai
+      { name: 'Dr. Ananya Reddy', avatar: 'AR', clinic: 'Care Hospitals', lat: 17.3850, lon: 78.4867 }, // Hyderabad
     ],
   },
   {
     name: 'Neurology',
     icon: <Brain className="h-8 w-8 text-purple-500" />,
     doctors: [
-      { name: 'Dr. Eleanor Vance', avatar: 'EV', clinic: 'Mind & Matter', lat: 40.7128, lon: -74.0060 }, // NYC
-      { name: 'Dr. Marcus Thorne', avatar: 'MT', clinic: 'Nerve Center', lat: 34.0522, lon: -118.2437 }, // LA
-      { name: 'Dr. Isaac Chen', avatar: 'IC', clinic: 'Brain & Spine', lat: 41.8781, lon: -87.6298 }, // Chicago
-      { name: 'Dr. Sofia Garcia', avatar: 'SG', clinic: 'NeuroWell', lat: 29.7604, lon: -95.3698 }, // Houston
+      { name: 'Dr. Vikram Singh', avatar: 'VS', clinic: 'Manipal Hospital', lat: 12.9716, lon: 77.5946 }, // Bangalore
+      { name: 'Dr. Sneha Patel', avatar: 'SP', clinic: 'Global Hospitals', lat: 13.0827, lon: 80.2707 }, // Chennai
+      { name: 'Dr. Arjun Kumar', avatar: 'AK', clinic: 'Yashoda Hospitals', lat: 17.3850, lon: 78.4867 }, // Hyderabad
     ],
   },
   {
     name: 'Orthopedics',
     icon: <Bone className="h-8 w-8 text-gray-500" />,
     doctors: [
-      { name: 'Dr. Clara Oswald', avatar: 'CO', clinic: 'Joint & Spine', lat: 41.8781, lon: -87.6298 }, // Chicago
-      { name: 'Dr. Julian Bashir', avatar: 'JB', clinic: 'Bone Health', lat: 34.0522, lon: -118.2437 }, // LA
-      { name: 'Dr. Leo Fitz', avatar: 'LF', clinic: 'Active Joints', lat: 40.7128, lon: -74.0060 }, // NYC
-      { name: 'Dr. Jemma Simmons', avatar: 'JS', clinic: 'OrthoRelief', lat: 29.7604, lon: -95.3698 }, // Houston
+      { name: 'Dr. Divya Rao', avatar: 'DR', clinic: 'Sakra World Hospital', lat: 12.9716, lon: 77.5946 }, // Bangalore
+      { name: 'Dr. Karthik Rajan', avatar: 'KR', clinic: 'MIOT International', lat: 13.0827, lon: 80.2707 }, // Chennai
+      { name: 'Dr. Pooja Desai', avatar: 'PD', clinic: 'Sunshine Hospitals', lat: 17.3850, lon: 78.4867 }, // Hyderabad
     ],
   },
   {
     name: 'Dermatology',
     icon: <Hand className="h-8 w-8 text-pink-500" />,
     doctors: [
-      { name: 'Dr. Iris West', avatar: 'IW', clinic: 'The Skin Center', lat: 29.7604, lon: -95.3698 }, // Houston
-      { name: 'Dr. Barry Allen', avatar: 'BA', clinic: 'Clear Skin Clinic', lat: 40.7128, lon: -74.0060 }, // NYC
-      { name: 'Dr. Caitlin Snow', avatar: 'CS', clinic: 'DermaPure', lat: 34.0522, lon: -118.2437 }, // LA
+        { name: 'Dr. Aisha Khan', avatar: 'AK', clinic: 'Cutis Clinic', lat: 12.9716, lon: 77.5946 }, // Bangalore
+        { name: 'Dr. Mohan Kumar', avatar: 'MK', clinic: 'Kaya Skin Clinic', lat: 13.0827, lon: 80.2707 }, // Chennai
+        { name: 'Dr. Sunita Reddy', avatar: 'SR', clinic: 'Olivia Skin & Hair', lat: 17.3850, lon: 78.4867 }, // Hyderabad
     ],
   },
   {
     name: 'Pediatrics',
     icon: <Baby className="h-8 w-8 text-blue-500" />,
     doctors: [
-      { name: 'Dr. Leslie Thompkins', avatar: 'LT', clinic: 'KidsCare', lat: 41.8781, lon: -87.6298 }, // Chicago
-      { name: 'Dr. Alistair Gordon', avatar: 'AG', clinic: 'Small Wonders', lat: 40.7128, lon: -74.0060 }, // NYC
-      { name: 'Dr. Kara Danvers', avatar: 'KD', clinic: 'Little Heroes', lat: 29.7604, lon: -95.3698 }, // Houston
+        { name: 'Dr. Rajesh Nair', avatar: 'RN', clinic: 'Rainbow Children\'s Hospital', lat: 12.9716, lon: 77.5946 }, // Bangalore
+        { name: 'Dr. Meena Iyer', avatar: 'MI', clinic: 'Kanchi Kamakoti Childs Trust', lat: 13.0827, lon: 80.2707 }, // Chennai
+        { name: 'Dr. Sameer Ahmed', avatar: 'SA', clinic: 'Lotus Children\'s Hospital', lat: 17.3850, lon: 78.4867 }, // Hyderabad
     ],
   },
   {
@@ -92,9 +89,9 @@ const initialSpecializations = [
       </svg>
     ),
     doctors: [
-      { name: 'Dr. John Smith', avatar: 'JS', clinic: 'Smile Bright', lat: 34.0522, lon: -118.2437 }, // LA
-      { name: 'Dr. Jane Doe', avatar: 'JD', clinic: 'Dental Wellness', lat: 41.8781, lon: -87.6298 }, // Chicago
-      { name: 'Dr. Clark Kent', avatar: 'CK', clinic: 'Super Smiles', lat: 40.7128, lon: -74.0060 }, // NYC
+        { name: 'Dr. Fatima Ali', avatar: 'FA', clinic: 'Apollo White Dental', lat: 12.9716, lon: 77.5946 }, // Bangalore
+        { name: 'Dr. Anand Kumar', avatar: 'AK', clinic: 'Axiss Dental', lat: 13.0827, lon: 80.2707 }, // Chennai
+        { name: 'Dr. Lakshmi Rao', avatar: 'LR', clinic: 'FMS Dental', lat: 17.3850, lon: 78.4867 }, // Hyderabad
     ],
   },
 ];

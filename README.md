@@ -17,10 +17,11 @@ To connect this project to a GitHub repository for version control, follow these
 
 2.  **Create a Repository on GitHub**: Go to [GitHub.com](https://github.com) and create a new, empty repository. Do not initialize it with a README or any other files.
 
-3.  **Link Your Local Project to GitHub**: Connect your local repository to the remote one on GitHub. Replace `<YOUR_GITHUB_REPO_URL>` with the URL provided by GitHub.
+3.  **Link Your Local Project to GitHub**: Connect your local repository to the remote one on GitHub. **Important:** Replace `<YOUR_GITHUB_REPO_URL>` with the actual URL provided by GitHub (e.g., `https://github.com/your-username/your-repo-name.git`).
     ```bash
     git remote add origin <YOUR_GITHUB_REPO_URL>
     ```
+    If you've already added an incorrect remote, you can fix it with `git remote set-url origin <YOUR_GITHUB_REPO_URL>`.
 
 4.  **Add, Commit, and Push Your Code**: Stage all your files, create an initial commit, and push your code to GitHub.
     ```bash

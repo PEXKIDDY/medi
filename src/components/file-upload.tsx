@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,18 +7,24 @@ import { Button } from '@/components/ui/button';
 import { Upload } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from 'lucide-react';
+import { analyzeDocument, AnalyzeDocumentOutput } from '@/app/ai/flows/analyze-document-flow';
 
+interface FileUploadProps {
+    onAnalysisComplete: (result: AnalyzeDocumentOutput | null) => void;
+    onLoadingStateChange: (isLoading: boolean) => void;
+}
 
-export default function FileUpload() {
+export default function FileUpload({ onAnalysisComplete, onLoadingStateChange }: FileUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
+    onAnalysisComplete(null);
     if (selectedFile) {
         if(selectedFile.size > 5 * 1024 * 1024){
             setError("File size cannot exceed 5MB.");
-            setFile(null)
+            setFile(null);
         } else {
             setFile(selectedFile);
             setError(null);
@@ -26,14 +32,36 @@ export default function FileUpload() {
     }
   };
 
-  const handleUpload = () => {
+  const fileToDataUri = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result as string);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  const handleUpload = async () => {
     if (!file) {
       setError('Please select a file to upload.');
       return;
     }
-    // TODO: Implement file upload logic here
-    console.log('Uploading file:', file.name);
     setError(null);
+    onAnalysisComplete(null);
+    onLoadingStateChange(true);
+
+    try {
+      const documentDataUri = await fileToDataUri(file);
+      const result = await analyzeDocument({ documentDataUri });
+      onAnalysisComplete(result);
+    } catch (e: any) {
+      setError("An error occurred during analysis: " + e.message);
+      onAnalysisComplete(null);
+    } finally {
+      onLoadingStateChange(false);
+    }
   };
 
   return (
@@ -60,7 +88,7 @@ export default function FileUpload() {
             </p>
         </div>
         
-        <Button onClick={handleUpload} className="w-full">
+        <Button onClick={handleUpload} className="w-full" disabled={!file}>
           Analyze Document
         </Button>
       </CardContent>

@@ -8,6 +8,7 @@
  */
 
 import { ai } from '@/app/ai/genkit';
+import { googleAI } from '@genkit-ai/googleai';
 import { z } from 'zod';
 
 const PrescriptionSchema = z.object({
@@ -42,6 +43,7 @@ const prompt = ai.definePrompt({
   name: 'analyzeDocumentPrompt',
   input: { schema: AnalyzeDocumentInputSchema },
   output: { schema: AnalyzeDocumentOutputSchema },
+  model: googleAI.model('gemini-1.5-flash-preview'),
   prompt: `You are an expert medical assistant. Your task is to analyze the provided medical document and extract key information.
 
 Carefully review the document below and identify any prescriptions, the prescribing doctor, the date of issue, and provide a concise summary of the document's purpose.

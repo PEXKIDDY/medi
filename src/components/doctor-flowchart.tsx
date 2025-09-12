@@ -30,7 +30,6 @@ const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => 
 const initialSpecializations = [
   {
     name: 'Cardiology',
-    icon: <Heart className="h-8 w-8 text-red-500" />,
     doctors: [
       { name: 'Dr. Priya Sharma', degree: 'MD, Cardiology', avatar: 'PS', clinic: 'Apollo Hospitals', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Hospitals+Bangalore' }, 
       { name: 'Dr. Rohan Mehra', degree: 'DM, Cardiology', avatar: 'RM', clinic: 'Fortis Malar', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Fortis+Malar+Hospital+Chennai' },
@@ -39,7 +38,6 @@ const initialSpecializations = [
   },
   {
     name: 'Neurology',
-    icon: <Brain className="h-8 w-8 text-purple-500" />,
     doctors: [
       { name: 'Dr. Vikram Singh', degree: 'DM, Neurology', avatar: 'VS', clinic: 'Manipal Hospital', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Manipal+Hospital+Old+Airport+Road+Bangalore' }, 
       { name: 'Dr. Sneha Patel', degree: 'MD, Neurology', avatar: 'SP', clinic: 'Global Hospitals', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Global+Hospital+Perumbakkam+Chennai' },
@@ -48,7 +46,6 @@ const initialSpecializations = [
   },
   {
     name: 'Orthopedics',
-    icon: <Bone className="h-8 w-8 text-gray-500" />,
     doctors: [
       { name: 'Dr. Divya Rao', degree: 'MS, Ortho', avatar: 'DR', clinic: 'Sakra World Hospital', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sakra+World+Hospital+Bangalore' }, 
       { name: 'Dr. Karthik Rajan', degree: 'MS, DNB', avatar: 'KR', clinic: 'MIOT International', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=MIOT+International+Chennai' },
@@ -57,7 +54,6 @@ const initialSpecializations = [
   },
    {
     name: 'Pediatrics',
-    icon: <Baby className="h-8 w-8 text-blue-500" />,
     doctors: [
         { name: 'Dr. Rajesh Nair', degree: 'MD, Pediatrics', avatar: 'RN', clinic: 'Rainbow Children\'s Hospital', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Rainbow+Childrens+Hospital+Bangalore' },
         { name: 'Dr. Meena Iyer', degree: 'DNB, Pediatrics', avatar: 'MI', clinic: 'Kanchi Kamakoti Childs Trust', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Kanchi+Kamakoti+Childs+Trust+Hospital+Chennai' },
@@ -65,6 +61,14 @@ const initialSpecializations = [
     ],
   },
 ];
+
+const SpecializationIcons: Record<string, React.ReactNode> = {
+    'Cardiology': <Heart className="h-8 w-8 text-red-500" />,
+    'Neurology': <Brain className="h-8 w-8 text-purple-500" />,
+    'Orthopedics': <Bone className="h-8 w-8 text-gray-500" />,
+    'Pediatrics': <Baby className="h-8 w-8 text-blue-500" />,
+};
+
 
 export default function DoctorFlowchart() {
   const [nearbyEnabled, setNearbyEnabled] = useState(false);
@@ -149,7 +153,7 @@ export default function DoctorFlowchart() {
           <Card key={spec.name} className="flex flex-col">
             <CardHeader className="flex flex-row items-center gap-4 pb-4">
               <div className="bg-muted p-3 rounded-full">
-                {spec.icon}
+                {SpecializationIcons[spec.name]}
               </div>
               <CardTitle className="text-2xl">{spec.name}</CardTitle>
             </CardHeader>

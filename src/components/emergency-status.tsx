@@ -2,76 +2,58 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useGeolocation } from '@/hooks/use-geolocation';
 import { getEmergencyUpdates, GetEmergencyUpdatesOutput } from '@/app/ai/flows/get-emergency-updates-flow';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Ambulance, Hospital, Timer, MapPin, AlertCircle, Loader2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
-// Helper function to calculate distance (Haversine formula)
-const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-  const R = 6371; // Radius of the earth in km
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; // Distance in km
-};
-
-// Simulated hospital location (e.g., Cedars-Sinai Medical Center in LA)
-const HOSPITAL_LOCATION = { latitude: 34.075, longitude: -118.3842 };
-const AVG_SPEED_KM_PER_MIN = 0.8; // Average speed of an ambulance in city traffic
+const INITIAL_DISTANCE_KM = 15; // Starting distance
+const AVG_SPEED_KM_PER_MIN = 0.8; // Average speed of an ambulance
 
 export default function EmergencyStatus() {
-  const { location, error, getLocation } = useGeolocation();
   const [updates, setUpdates] = useState<GetEmergencyUpdatesOutput[]>([]);
   const [isFetchingUpdate, setIsFetchingUpdate] = useState(true);
-  const [initialDistance, setInitialDistance] = useState<number | null>(null);
-  const [currentDistance, setCurrentDistance] = useState<number | null>(null);
+  const [currentDistance, setCurrentDistance] = useState<number>(INITIAL_DISTANCE_KM);
 
   useEffect(() => {
-    // Start tracking location immediately on component mount
-    getLocation();
+    // Function to fetch updates from the AI
+    const fetchUpdate = async (distance: number) => {
+      setIsFetchingUpdate(true);
+      try {
+        const time = distance / AVG_SPEED_KM_PER_MIN;
+        const newUpdate = await getEmergencyUpdates({ distance, time });
+        setUpdates(prev => [newUpdate, ...prev.slice(0, 4)]); // Keep last 5 updates
+      } catch (e) {
+        console.error("Failed to get emergency update:", e);
+      } finally {
+        setIsFetchingUpdate(false);
+      }
+    };
 
-    // Set up an interval to continuously get location and fetch updates
+    // Initial fetch
+    fetchUpdate(currentDistance);
+
+    // Set up an interval to simulate progress and fetch new updates
     const intervalId = setInterval(() => {
-      getLocation();
-    }, 10000); // Update location every 10 seconds
+      setCurrentDistance(prevDistance => {
+        const newDistance = Math.max(0, prevDistance - (AVG_SPEED_KM_PER_MIN * (10/60))); // Simulate 10 seconds of travel
+        
+        // Fetch a new update based on the new distance
+        fetchUpdate(newDistance);
+        
+        if (newDistance === 0) {
+          clearInterval(intervalId); // Stop when arrived
+        }
+        
+        return newDistance;
+      });
+    }, 10000); // Update every 10 seconds
 
     return () => clearInterval(intervalId);
-  }, [getLocation]);
+  }, []);
 
-  useEffect(() => {
-    if (location) {
-      const distance = getDistance(location.latitude, location.longitude, HOSPITAL_LOCATION.latitude, HOSPITAL_LOCATION.longitude);
-      if (initialDistance === null) {
-        setInitialDistance(distance);
-      }
-      setCurrentDistance(distance);
-
-      const fetchUpdate = async () => {
-        setIsFetchingUpdate(true);
-        try {
-          const time = distance / AVG_SPEED_KM_PER_MIN;
-          const newUpdate = await getEmergencyUpdates({ distance, time });
-          setUpdates(prev => [newUpdate, ...prev.slice(0, 4)]); // Keep last 5 updates
-        } catch (e) {
-          console.error("Failed to get emergency update:", e);
-        } finally {
-          setIsFetchingUpdate(false);
-        }
-      };
-      
-      fetchUpdate();
-    }
-  }, [location, initialDistance]);
-  
-  const progressPercentage = initialDistance && currentDistance !== null
-    ? Math.max(0, Math.min(100, ((initialDistance - currentDistance) / initialDistance) * 100))
-    : 0;
+  const progressPercentage = Math.max(0, Math.min(100, ((INITIAL_DISTANCE_KM - currentDistance) / INITIAL_DISTANCE_KM) * 100));
 
   return (
     <div className="w-full max-w-4xl p-4 md:p-8 space-y-6">
@@ -96,14 +78,6 @@ export default function EmergencyStatus() {
               </div>
           </div>
           
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Location Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm font-medium">
                 <span className="flex items-center gap-1"><MapPin className="h-4 w-4" /> Your Location</span>

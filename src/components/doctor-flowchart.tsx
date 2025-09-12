@@ -120,26 +120,36 @@ export default function DoctorFlowchart() {
 
   useEffect(() => {
     if (nearbyEnabled && location) {
-      const sortedSpecializations = initialSpecializations.map(spec => {
+      const specializationsWithDistances = initialSpecializations.map(spec => {
         const doctorsWithDistance = spec.doctors.map(doc => ({
           ...doc,
           distance: getDistance(location.latitude, location.longitude, doc.lat, doc.lon),
         }));
 
         const sortedDoctors = doctorsWithDistance.sort((a, b) => a.distance - b.distance);
-
+        
         return {
           ...spec,
           doctors: sortedDoctors.slice(0, 3),
+          // Store the distance of the nearest doctor for sorting specializations
+          nearestDoctorDistance: sortedDoctors.length > 0 ? sortedDoctors[0].distance : Infinity,
         };
       });
+
+      // Sort specializations by the nearest doctor
+      const sortedSpecializations = specializationsWithDistances.sort((a, b) => a.nearestDoctorDistance - b.nearestDoctorDistance);
+      
       setSpecializations(sortedSpecializations);
     } else {
-      setSpecializations(initialSpecializations.map(spec => ({...spec, doctors: spec.doctors.slice(0, 3) })));
+      // Reset to initial state, ensuring we only show 3 doctors per specialization
+      setSpecializations(initialSpecializations.map(spec => ({
+          ...spec,
+          doctors: spec.doctors.slice(0, 3),
+      })));
     }
   }, [nearbyEnabled, location]);
   
-  // Initially show top 3 doctors
+  // Initially show top 3 doctors per specialization
   useEffect(() => {
     setSpecializations(initialSpecializations.map(spec => ({...spec, doctors: spec.doctors.slice(0, 3) })));
   }, []);

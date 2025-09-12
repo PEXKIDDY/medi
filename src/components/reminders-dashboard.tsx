@@ -23,7 +23,8 @@ const medicationSchema = z.object({
 });
 
 const appointmentSchema = z.object({
-  doctor: z.string().min(1, "Doctor/specialist name is required."),
+  doctor: z.string().min(1, "Doctor name is required."),
+  specialization: z.string().min(1, "Specialization is required."),
   location: z.string().min(1, "Location is required."),
   dateTime: z.string().min(1, "Date and time are required.")
 });
@@ -45,7 +46,7 @@ export default function RemindersDashboard() {
     { id: 2, name: 'Metformin', dosage: '500mg', time: '20:00', taken: false },
   ]);
   const [appointments, setAppointments] = useState<Appointment[]>([
-    { id: 1, doctor: 'Dr. Evelyn Reed (Cardiology)', location: 'Heartbeat Clinic', dateTime: '2024-08-15 at 10:30 AM' },
+    { id: 1, doctor: 'Dr. Evelyn Reed', specialization: 'Cardiology', location: 'Heartbeat Clinic', dateTime: '2024-08-15T10:30' },
   ]);
   const [hydration, setHydration] = useState<Hydration[]>([
      { id: 1, amount: '250ml', time: '09:00', taken: true },
@@ -261,12 +262,17 @@ export default function RemindersDashboard() {
                           <DialogHeader><DialogTitle>Add New Appointment</DialogTitle></DialogHeader>
                           <form onSubmit={handleApptSubmit(addAppointment)} className="space-y-4">
                               <div>
-                                  <Label htmlFor="doctor">Doctor/Specialist</Label>
+                                  <Label htmlFor="doctor">Doctor Name</Label>
                                   <Input id="doctor" {...apptRegister('doctor')} />
                                   {apptErrors.doctor && <p className="text-destructive text-sm mt-1">{apptErrors.doctor.message}</p>}
                               </div>
                               <div>
-                                  <Label htmlFor="location">Location</Label>
+                                  <Label htmlFor="specialization">Specialization</Label>
+                                  <Input id="specialization" {...apptRegister('specialization')} />
+                                  {apptErrors.specialization && <p className="text-destructive text-sm mt-1">{apptErrors.specialization.message}</p>}
+                              </div>
+                              <div>
+                                  <Label htmlFor="location">Clinic Location</Label>
                                   <Input id="location" {...apptRegister('location')} />
                                   {apptErrors.location && <p className="text-destructive text-sm mt-1">{apptErrors.location.message}</p>}
                               </div>
@@ -290,7 +296,7 @@ export default function RemindersDashboard() {
                   <div className="flex items-start gap-4">
                     <Calendar className="mt-1"/>
                     <div>
-                      <p className="font-semibold text-lg">{appt.doctor}</p>
+                      <p className="font-semibold text-lg">{appt.doctor} <span className="text-sm font-medium text-muted-foreground">({appt.specialization})</span></p>
                       <p className="text-muted-foreground">{appt.location}</p>
                       <p className="text-primary font-medium">{new Date(appt.dateTime).toLocaleString()}</p>
                     </div>
@@ -358,5 +364,3 @@ export default function RemindersDashboard() {
     </div>
   );
 }
-
-    

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import DoctorFlowchart from '@/components/doctor-flowchart';
 import { Button } from '@/components/ui/button';
 import { Siren } from 'lucide-react';
@@ -20,6 +21,7 @@ import { Toaster } from "@/components/ui/toaster";
 
 export default function Home() {
   const [isCalling, setIsCalling] = useState(false);
+  const router = useRouter();
 
   const handleEmergencyCall = () => {
     setIsCalling(true);
@@ -28,14 +30,12 @@ export default function Home() {
       description: "You are being connected to the nearest emergency service. Please stay on the line.",
       variant: "destructive",
     });
-    // Simulate call duration
+    
+    // Simulate connecting to the call, then navigate
     setTimeout(() => {
       setIsCalling(false);
-      toast({
-        title: "Call Ended",
-        description: "The simulated emergency call has ended.",
-      });
-    }, 10000); // 10 seconds
+      router.push('/emergency/status');
+    }, 2000); // 2 second delay to simulate connection
   };
 
   return (
@@ -63,7 +63,7 @@ export default function Home() {
             <AlertDialogFooter>
               <AlertDialogCancel disabled={isCalling}>Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleEmergencyCall} disabled={isCalling}>
-                {isCalling ? 'Calling...' : 'Call Now'}
+                {isCalling ? 'Connecting...' : 'Call Now'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

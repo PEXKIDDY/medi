@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Stethoscope, Heart, Brain, Bone, Baby, Hand, LocateFixed, WifiOff, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -7,6 +8,9 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useGeolocation } from '@/hooks/use-geolocation';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import imageData from '@/lib/placeholder-images.json';
+
+const doctorAvatars = imageData['doctor-avatars'] as Record<string, { seed: string, width: number, height: number }>;
 
 // Helper function to calculate distance (Haversine formula)
 const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -180,25 +184,36 @@ export default function DoctorFlowchart() {
             </CardHeader>
             <CardContent className="flex-grow">
               <div className="space-y-4">
-                {spec.doctors.map((doc) => (
-                  <div key={doc.name} className="flex items-center gap-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={`https://i.pravatar.cc/150?u=${doc.avatar}`} />
-                      <AvatarFallback className="bg-primary text-primary-foreground">
-                        {doc.avatar}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-grow">
-                      <p className="font-semibold text-lg">{doc.name}</p>
-                      <p className="text-sm text-muted-foreground">{doc.clinic}</p>
-                      {nearbyEnabled && location && (doc as any).distance !== undefined && (
-                        <p className="text-xs text-blue-500">
-                          ~{Math.round((doc as any).distance)} km away
-                        </p>
-                      )}
+                {spec.doctors.map((doc) => {
+                  const avatarData = doctorAvatars[doc.name];
+                  const avatarSrc = avatarData ? `https://picsum.photos/seed/${avatarData.seed}/${avatarData.width}/${avatarData.height}` : `https://i.pravatar.cc/150?u=${doc.avatar}`;
+                  return (
+                    <div key={doc.name} className="flex items-center gap-4">
+                      <Avatar className="h-12 w-12">
+                        <Image
+                          src={avatarSrc}
+                          alt={`Portrait of ${doc.name}`}
+                          width={60}
+                          height={60}
+                          className="rounded-full"
+                          data-ai-hint="doctor portrait"
+                        />
+                        <AvatarFallback className="bg-primary text-primary-foreground">
+                          {doc.avatar}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-grow">
+                        <p className="font-semibold text-lg">{doc.name}</p>
+                        <p className="text-sm text-muted-foreground">{doc.clinic}</p>
+                        {nearbyEnabled && location && (doc as any).distance !== undefined && (
+                          <p className="text-xs text-blue-500">
+                            ~{Math.round((doc as any).distance)} km away
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                  {spec.doctors.length === 0 && (
                   <p className="text-muted-foreground">No doctors found for this specialization.</p>
                 )}

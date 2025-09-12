@@ -43,7 +43,7 @@ const prompt = ai.definePrompt({
   name: 'analyzeDocumentPrompt',
   input: { schema: AnalyzeDocumentInputSchema },
   output: { schema: AnalyzeDocumentOutputSchema },
-  model: googleAI.model('gemini-1.5-flash-preview'),
+  model: googleAI.model('gemini-1.5-flash'),
   prompt: `You are an expert medical assistant. Your task is to analyze the provided medical document and extract key information.
 
 Carefully review the document below and identify any prescriptions, the prescribing doctor, the date of issue, and provide a concise summary of the document's purpose.

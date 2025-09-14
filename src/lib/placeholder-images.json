@@ -174,7 +174,7 @@
     "Dr. V. Sudhakar": { "seed": "298", "width": 150, "height": 150 },
     "Dr. S. K. Rao": { "seed": "299", "width": 150, "height": 150 },
     "Dr. N. V. S. Mohan": { "seed": "300", "width": 150, "height": 150 },
-    "Dr. C. R. Reddy": { "seed": "301", "width": 150, "height": 150 },
+    "Dr. CRRe": { "seed": "301", "width": 150, "height": 150 },
     "Dr. B. Rajendra Prasad": { "seed": "302", "width": 150, "height": 150 },
     "Dr. G. Satyanarayana": { "seed": "303", "width": 150, "height": 150 },
     "Dr. K. Vijaya": { "seed": "304", "width": 150, "height": 150 },
@@ -187,7 +187,7 @@
     "Dr. P. S. Reddy": { "seed": "312", "width": 150, "height": 150 },
     "Dr. Naveen Kumar": { "seed": "313", "width": 150, "height": 150 },
     "Dr. S. V. Ramana": { "seed": "314", "width": 150, "height": 150 },
-    "Dr. K. Srinivas": { "seed": "315", "width": 150, "height": 150 },
+    "Dr. KSri": { "seed": "315", "width": 150, "height": 150 },
     "Dr. R. Madhavi": { "seed": "316", "width": 150, "height": 150 },
     "Dr. V. Nagabhushanam": { "seed": "317", "width": 150, "height": 150 },
     "Dr. P.V. Rama Rao": { "seed": "318", "width": 150, "height": 150 },
@@ -207,9 +207,10 @@
     "Dr. Venkat Reddy": { "seed": "332", "width": 150, "height": 150 },
     "Dr. K. Surendra": { "seed": "333", "width": 150, "height": 150 },
     "Dr. P. Sridhar": { "seed": "334", "width": 150, "height": 150 },
-    "Dr. S. K. Rao": { "seed": "335", "width": 150, "height": 150 },
+    "Dr. SKRa": { "seed": "335", "width": 150, "height": 150 },
     "Dr. B. Srinivas": { "seed": "336", "width": 150, "height": 150 },
     "Dr. K. V. Rao": { "seed": "337", "width": 150, "height": 150 },
+    "Dr. PSri2": { "seed": "338", "width": 150, "height": 150 },
     "Dr. N. Chandrasekhar": { "seed": "339", "width": 150, "height": 150 },
     "Dr. T. Narayana Rao": { "seed": "340", "width": 150, "height": 150 },
     "Dr. P. Raghu Ram": { "seed": "341", "width": 150, "height": 150 },
@@ -222,7 +223,7 @@
     "Dr. S. Subba Rao": { "seed": "348", "width": 150, "height": 150 },
     "Dr. K. Ram Prasad": { "seed": "349", "width": 150, "height": 150 },
     "Dr. S. Prasanth": { "seed": "350", "width": 150, "height": 150 },
-    "Dr. G. V. Rao": { "seed": "351", "width": 150, "height": 150 },
+    "Dr. GVRao": { "seed": "351", "width": 150, "height": 150 },
     "Dr. K. Swaroop": { "seed": "352", "width": 150, "height": 150 },
     "Dr. V. Nagesh": { "seed": "354", "width": 150, "height": 150 },
     "Dr. L. S. Rao": { "seed": "355", "width": 150, "height": 150 },
@@ -235,8 +236,6 @@
     "Dr. S.V.S.S. Murthy": { "seed": "362", "width": 150, "height": 150 },
     "Dr. G.V. Rao": { "seed": "363", "width": 150, "height": 150 },
     "Dr. V. Lakshmi": { "seed": "364", "width": 150, "height": 150 },
-    "Dr. P. Sivakumar": { "seed": "365", "width": 150, "height": 150 },
-    "Dr. P. Sridhar": { "seed": "334", "width": 150, "height": 150 },
-    "Dr. PSri2": { "seed": "338", "width": 150, "height": 150 }
+    "Dr. P. Sivakumar": { "seed": "365", "width": 150, "height": 150 }
   }
 }

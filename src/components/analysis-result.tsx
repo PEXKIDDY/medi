@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import type { AnalyzeDocumentOutput } from '@/app/ai/flows/analyze-document-flow';
-import { getMedicationInfo } from '@/app/ai/flows/get-medication-info-flow';
+import { getMedicationInfo, GetMedicationInfoOutput } from '@/app/ai/flows/get-medication-info-flow';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -15,19 +15,21 @@ interface AnalysisResultProps {
 export default function AnalysisResult({ result }: AnalysisResultProps) {
   const [isMedInfoOpen, setMedInfoOpen] = useState(false);
   const [selectedMedication, setSelectedMedication] = useState<string | null>(null);
-  const [medicationInfo, setMedicationInfo] = useState<string | null>(null);
+  const [medicationInfo, setMedicationInfo] = useState<GetMedicationInfoOutput | null>(null);
   const [isLoadingInfo, setIsLoadingInfo] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleMedicationClick = async (medicationName: string) => {
     setSelectedMedication(medicationName);
     setMedInfoOpen(true);
     setIsLoadingInfo(true);
     setMedicationInfo(null);
+    setError(null);
     try {
       const info = await getMedicationInfo({ medicationName });
-      setMedicationInfo(info.description);
+      setMedicationInfo(info);
     } catch (error) {
-      setMedicationInfo("Sorry, we couldn't fetch information for this medication at the moment.");
+      setError("Sorry, we couldn't fetch information for this medication at the moment.");
     } finally {
       setIsLoadingInfo(false);
     }
@@ -113,7 +115,7 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
       </Card>
 
       <Dialog open={isMedInfoOpen} onOpenChange={setMedInfoOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FileText />
@@ -123,15 +125,29 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
               Information about this medication.
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="py-4 space-y-4">
             {isLoadingInfo && (
               <div className="flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 <p className="ml-3 text-muted-foreground">Fetching information...</p>
               </div>
             )}
+             {error && <p className="text-destructive text-sm">{error}</p>}
             {medicationInfo && (
-              <p className="text-sm whitespace-pre-wrap">{medicationInfo}</p>
+               <div className="space-y-4">
+                    <div>
+                        <h3 className="font-semibold text-lg mb-2">Primary Use</h3>
+                        <p className="text-sm text-muted-foreground">{medicationInfo.primaryUse}</p>
+                    </div>
+                        <div>
+                        <h3 className="font-semibold text-lg mb-2">How It Works</h3>
+                        <p className="text-sm text-muted-foreground">{medicationInfo.howItWorks}</p>
+                    </div>
+                        <div>
+                        <h3 className="font-semibold text-lg mb-2 flex items-center gap-2"><Pill/> Common Side Effects</h3>
+                        <div className="text-sm text-muted-foreground whitespace-pre-wrap">{medicationInfo.commonSideEffects}</div>
+                    </div>
+                </div>
             )}
           </div>
         </DialogContent>

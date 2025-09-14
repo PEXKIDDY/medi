@@ -17,7 +17,9 @@ const GetMedicationInfoInputSchema = z.object({
 export type GetMedicationInfoInput = z.infer<typeof GetMedicationInfoInputSchema>;
 
 const GetMedicationInfoOutputSchema = z.object({
-  description: z.string().describe('A detailed explanation of the medication\'s use, purpose, and common side effects.'),
+  primaryUse: z.string().describe("A description of the medication's primary use."),
+  howItWorks: z.string().describe('An explanation of how the medication works.'),
+  commonSideEffects: z.string().describe('A bulleted list of common potential side effects.'),
 });
 export type GetMedicationInfoOutput = z.infer<typeof GetMedicationInfoOutputSchema>;
 
@@ -33,7 +35,10 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert pharmacist and medical assistant.
 Your task is to provide a clear, easy-to-understand explanation for the following medication.
 
-Explain its primary use, how it works, and common potential side effects. Present this information concisely.
+Explain its primary use, how it works, and common potential side effects.
+
+- For common side effects, provide them in a bulleted list.
+- For all fields, the text should be clear and concise.
 
 Medication: {{{medicationName}}}`,
 });

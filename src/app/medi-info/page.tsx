@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, FileText, AlertCircle } from 'lucide-react';
+import { Loader2, FileText, AlertCircle, Pill } from 'lucide-react';
 import { getMedicationInfo, GetMedicationInfoOutput } from '@/app/ai/flows/get-medication-info-flow';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
@@ -84,8 +84,19 @@ export default function MediInfoPage() {
                                 </div>
                             </div>
                         </CardHeader>
-                        <CardContent>
-                             <p className="text-sm whitespace-pre-wrap">{result.description}</p>
+                        <CardContent className="space-y-4">
+                            <div>
+                                <h3 className="font-semibold text-lg mb-2">Primary Use</h3>
+                                <p className="text-sm text-muted-foreground">{result.primaryUse}</p>
+                            </div>
+                             <div>
+                                <h3 className="font-semibold text-lg mb-2">How It Works</h3>
+                                <p className="text-sm text-muted-foreground">{result.howItWorks}</p>
+                            </div>
+                             <div>
+                                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2"><Pill/> Common Side Effects</h3>
+                                <div className="text-sm text-muted-foreground whitespace-pre-wrap">{result.commonSideEffects}</div>
+                            </div>
                         </CardContent>
                     </Card>
                 )}

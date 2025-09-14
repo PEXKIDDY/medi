@@ -9,18 +9,30 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Pill, Calendar, GlassWater, PlusCircle, Trash2, BellRing, BellOff } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Switch } from '@/components/ui/switch';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 
 // Schemas for form validation
 const medicationSchema = z.object({
   name: z.string().min(1, "Medication name is required."),
   dosage: z.string().min(1, "Dosage is required."),
-  time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format (HH:MM).")
+  time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format (HH:MM)."),
+  recurrenceType: z.enum(['daily', 'custom']),
+  recurrenceDays: z.array(z.string()).optional(),
+}).refine(data => {
+    if (data.recurrenceType === 'custom' && (!data.recurrenceDays || data.recurrenceDays.length === 0)) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Please select at least one day for custom recurrence.",
+    path: ["recurrenceDays"],
 });
 
 const appointmentSchema = z.object({
@@ -40,11 +52,13 @@ type Appointment = z.infer<typeof appointmentSchema> & { id: number };
 type Hydration = z.infer<typeof hydrationSchema> & { id: number; taken: boolean };
 type ActiveAlarm = { type: 'med' | 'hydro', id: number, name: string } | null;
 
+const weekDays = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
 
 export default function RemindersDashboard() {
   const [medications, setMedications] = useState<Medication[]>([
-    { id: 1, name: 'Lisinopril', dosage: '10mg', time: '08:00', taken: true },
-    { id: 2, name: 'Metformin', dosage: '500mg', time: '20:00', taken: false },
+    { id: 1, name: 'Lisinopril', dosage: '10mg', time: '08:00', taken: true, recurrenceType: 'daily' },
+    { id: 2, name: 'Metformin', dosage: '500mg', time: '20:00', taken: false, recurrenceType: 'custom', recurrenceDays: ['mon', 'wed', 'fri'] },
   ]);
   const [appointments, setAppointments] = useState<Appointment[]>([
     { id: 1, doctor: 'Dr. Evelyn Reed', specialization: 'Cardiology', location: 'Heartbeat Clinic', dateTime: '2024-08-15T10:30' },
@@ -55,7 +69,10 @@ export default function RemindersDashboard() {
      { id: 3, amount: '250ml', time: '13:00', taken: false },
   ]);
 
-  const { register: medRegister, handleSubmit: handleMedSubmit, reset: medReset, formState: { errors: medErrors } } = useForm({ resolver: zodResolver(medicationSchema) });
+  const { control, register: medRegister, handleSubmit: handleMedSubmit, reset: medReset, formState: { errors: medErrors }, watch } = useForm<z.infer<typeof medicationSchema>>({ 
+    resolver: zodResolver(medicationSchema),
+    defaultValues: { recurrenceType: 'daily', recurrenceDays: [] }
+  });
   const { register: apptRegister, handleSubmit: handleApptSubmit, reset: apptReset, formState: { errors: apptErrors } } = useForm({ resolver: zodResolver(appointmentSchema) });
   const { register: hydroRegister, handleSubmit: handleHydroSubmit, reset: hydroReset, formState: { errors: hydroErrors } } = useForm({ resolver: zodResolver(hydrationSchema) });
   
@@ -66,6 +83,8 @@ export default function RemindersDashboard() {
   const [alarmsEnabled, setAlarmsEnabled] = useState(true);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const recurrenceType = watch('recurrenceType');
 
   useEffect(() => {
     // Initialize Audio on client
@@ -79,8 +98,15 @@ export default function RemindersDashboard() {
 
         const now = new Date();
         const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        const currentDay = weekDays[now.getDay()];
         
-        const dueMedication = medications.find(m => m.time === currentTime && !m.taken);
+        const dueMedication = medications.find(m => {
+          if (m.time !== currentTime || m.taken) return false;
+          if (m.recurrenceType === 'daily') return true;
+          if (m.recurrenceType === 'custom' && m.recurrenceDays?.includes(currentDay)) return true;
+          return false;
+        });
+
         if (dueMedication) {
             setActiveAlarm({ type: 'med', id: dueMedication.id, name: `${dueMedication.name} (${dueMedication.dosage})` });
             return;
@@ -118,8 +144,14 @@ export default function RemindersDashboard() {
 
 
   const addMedication = (data: z.infer<typeof medicationSchema>) => {
-    setMedications([...medications, { ...data, id: Date.now(), taken: false }]);
-    medReset();
+    const newMed = { 
+        ...data, 
+        id: Date.now(), 
+        taken: false,
+        recurrenceDays: data.recurrenceType === 'daily' ? weekDays : data.recurrenceDays
+    };
+    setMedications([...medications, newMed]);
+    medReset({ name: '', dosage: '', time: '', recurrenceType: 'daily', recurrenceDays: [] });
     setMedDialogOpen(false);
   };
 
@@ -157,6 +189,17 @@ export default function RemindersDashboard() {
         setActiveAlarm(null);
     }
   }
+
+  const getRecurrenceText = (med: Medication) => {
+    if (med.recurrenceType === 'daily') return 'Daily';
+    if (med.recurrenceType === 'custom' && med.recurrenceDays) {
+        if(med.recurrenceDays.length === 7) return 'Daily';
+        if(med.recurrenceDays.length === 2 && med.recurrenceDays.includes('sat') && med.recurrenceDays.includes('sun')) return 'Weekends';
+        if(med.recurrenceDays.length === 5 && !med.recurrenceDays.includes('sat') && !med.recurrenceDays.includes('sun')) return 'Weekdays';
+        return med.recurrenceDays.map(d => d.charAt(0).toUpperCase() + d.slice(1)).join(', ');
+    }
+    return 'Daily';
+  };
 
 
   return (
@@ -230,8 +273,46 @@ export default function RemindersDashboard() {
                                 <Input id="time" type="time" {...medRegister('time')} />
                                 {medErrors.time && <p className="text-destructive text-sm mt-1">{medErrors.time.message}</p>}
                             </div>
+                             <div>
+                                <Label>Recurrence</Label>
+                                <Controller
+                                    name="recurrenceType"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4 mt-2">
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="daily" id="daily"/>
+                                                <Label htmlFor="daily">Daily</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="custom" id="custom"/>
+                                                <Label htmlFor="custom">Custom</Label>
+                                            </div>
+                                        </RadioGroup>
+                                    )}
+                                />
+                            </div>
+
+                            {recurrenceType === 'custom' && (
+                                <div>
+                                    <Label>Select Days</Label>
+                                    <Controller
+                                        name="recurrenceDays"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <ToggleGroup type="multiple" variant="outline" onValueChange={field.onChange} defaultValue={field.value} className="flex-wrap justify-start gap-1 mt-2">
+                                                {weekDays.map(day => (
+                                                    <ToggleGroupItem key={day} value={day} className="w-12 h-12 capitalize">{day}</ToggleGroupItem>
+                                                ))}
+                                            </ToggleGroup>
+                                        )}
+                                    />
+                                    {medErrors.recurrenceDays && <p className="text-destructive text-sm mt-1">{medErrors.recurrenceDays.message}</p>}
+                                </div>
+                            )}
+
                             <DialogFooter>
-                                <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
+                                <DialogClose asChild><Button type="button" variant="secondary" onClick={() => medReset()}>Cancel</Button></DialogClose>
                                 <Button type="submit">Add Reminder</Button>
                             </DialogFooter>
                         </form>
@@ -244,9 +325,12 @@ export default function RemindersDashboard() {
                 <div key={med.id} className="flex items-center justify-between p-4 rounded-lg border bg-card">
                   <div className="flex items-center gap-4">
                     <Checkbox id={`med-${med.id}`} checked={med.taken} onCheckedChange={() => toggleTaken(med.id, 'med')} />
-                    <Label htmlFor={`med-${med.id}`} className={`text-lg ${med.taken ? 'line-through text-muted-foreground' : ''}`}>
-                      <span className="font-semibold">{med.name}</span> ({med.dosage}) - {med.time}
-                    </Label>
+                    <div>
+                      <Label htmlFor={`med-${med.id}`} className={`text-lg ${med.taken ? 'line-through text-muted-foreground' : ''}`}>
+                        <span className="font-semibold">{med.name}</span> ({med.dosage}) - {med.time}
+                      </Label>
+                      <p className='text-sm text-muted-foreground'>{getRecurrenceText(med)}</p>
+                    </div>
                   </div>
                   <Button variant="ghost" size="icon" onClick={() => deleteReminder(med.id, 'med')}><Trash2 className="text-destructive"/></Button>
                 </div>
@@ -375,3 +459,5 @@ export default function RemindersDashboard() {
     </div>
   );
 }
+
+    

@@ -28,6 +28,9 @@ export default function EmergencyStatus() {
 
   useEffect(() => {
     const fetchUpdate = async (distance: number) => {
+      // Don't fetch if we are already fetching
+      if (isFetchingUpdate) return;
+      
       setIsFetchingUpdate(true);
       try {
         const time = distance / AVG_SPEED_KM_PER_MIN;
@@ -51,12 +54,20 @@ export default function EmergencyStatus() {
     };
     
     // Fetch initial update
-    fetchUpdate(INITIAL_DISTANCE_KM);
+    if (updates.length === 0) {
+        fetchUpdate(INITIAL_DISTANCE_KM);
+    }
 
     // Set up interval to simulate ambulance movement
     const intervalId = setInterval(() => {
       setCurrentDistance(prevDistance => {
-        const newDistance = Math.max(0, prevDistance - (AVG_SPEED_KM_PER_MIN * (10 / 60))); // Simulate movement every 10 seconds
+        if (prevDistance <= 0) {
+          clearInterval(intervalId);
+          return 0;
+        }
+        
+        // Simulate movement every 10 seconds
+        const newDistance = Math.max(0, prevDistance - (AVG_SPEED_KM_PER_MIN * (10 / 60))); 
         
         const currentStatus = getStatusForDistance(prevDistance);
         const newStatus = getStatusForDistance(newDistance);
@@ -64,17 +75,24 @@ export default function EmergencyStatus() {
         // Only fetch a new update from the AI if the status has changed
         if (newStatus !== currentStatus && newStatus !== lastStatusRef.current) {
           fetchUpdate(newDistance);
+        } else if(newDistance <= 0 && lastStatusRef.current !== "Arrived"){
+           // Final update when arrived
+           const finalUpdate: GetEmergencyUpdatesOutput = {
+            status: "Arrived",
+            updateMessage: "You have arrived at the hospital. Medical staff are waiting.",
+            eta: "0 minutes",
+           };
+           setUpdates(prev => [finalUpdate, ...prev.slice(0, 4)]);
+           lastStatusRef.current = "Arrived";
         }
         
-        if (newDistance <= 0) {
-           clearInterval(intervalId);
-        }
         return newDistance;
       });
     }, 10000); // 10-second interval
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const progressPercentage = Math.max(0, Math.min(100, ((INITIAL_DISTANCE_KM - currentDistance) / INITIAL_DISTANCE_KM) * 100));

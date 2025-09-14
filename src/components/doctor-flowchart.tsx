@@ -527,15 +527,22 @@ export default function DoctorFlowchart() {
         setCityName(displayCity);
         
         if (activeLocation) {
-             const searchCityTerm = (manualLocation?.city.split(',')[0] || currentCity || manualCityInput).trim().toLowerCase();
+             let searchCityTerm = (manualLocation?.city.split(',')[0] || currentCity || manualCityInput).trim().toLowerCase();
+             
+             // Handle Rajahmundry/Rajamahendravaram case
+            if (searchCityTerm === 'rajamahendravaram') {
+                searchCityTerm = 'rajahmundry';
+            }
+
 
             newSpecs.forEach((spec: any) => {
                 const originalDoctors = spec.doctors;
                 spec.doctors = originalDoctors
                     .filter((doc: any) => {
                         const clinicCity = doc.clinic.toLowerCase();
-                        // Handle cases like "Guntur Municipal Corporation"
-                        return clinicCity.includes(searchCityTerm);
+                        // Handle cases like "Guntur Municipal Corporation" vs "Guntur"
+                        // Or "Rajahmundry" vs "Rajamahendravaram"
+                        return clinicCity.includes(searchCityTerm) || searchCityTerm.includes(clinicCity.split(',')[0].trim());
                     })
                     .map((doc: any) => ({
                         ...doc,
@@ -545,7 +552,7 @@ export default function DoctorFlowchart() {
                 spec.doctors.sort((a: any, b: any) => a.distance - b.distance);
             });
 
-             // Filter out specializations with no doctors
+             // Filter out specializations with no doctors in the searched area
             newSpecs = newSpecs.filter((spec: any) => spec.doctors.length > 0);
         }
         setSpecializations(newSpecs);
@@ -694,6 +701,12 @@ export default function DoctorFlowchart() {
             </CardContent>
           </Card>
         ))}
+         {specializations.length === 0 && (manualLocation || (nearbyEnabled && location)) && !loadingCity && (
+          <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
+            <h3 className="text-2xl font-semibold">No Doctors Found</h3>
+            <p className="text-muted-foreground mt-2">There are no doctors listed for the selected location. Try a different city.</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -195,17 +195,23 @@ export default function DoctorFlowchart() {
     }
     setLoadingCity(true);
     setSearchError(null);
-    setNearbyEnabled(false);
-    clearError();
-    setManualLocation(null);
+    setNearbyEnabled(false); // Disable nearby toggle on manual search
+    clearError(); // Clear any previous geolocation errors
+    setManualLocation(null); // Reset manual location
 
     fetch(`https://geocode.maps.co/search?q=${encodeURIComponent(manualCityInput)}`)
       .then(res => res.json())
       .then(data => {
         if (data && data.length > 0) {
           const result = data[0];
-          const displayNameParts = result.display_name.split(',');
-          const city = displayNameParts.length > 3 ? displayNameParts[displayNameParts.length - 4].trim() : displayNameParts[0].trim();
+          // A more robust way to find the city name from the display_name
+          const addressParts = result.display_name.split(',').map((part: string) => part.trim());
+          const city = addressParts.find((part: string, index: number) => {
+              // Heuristic: city is often before the postcode or state
+              const nextPart = addressParts[index + 1];
+              return nextPart && /^\d+$/.test(nextPart); // check if next part is postcode
+          }) || result.address?.city || result.address?.town || result.address?.village || addressParts[0];
+
           setManualLocation({ latitude: parseFloat(result.lat), longitude: parseFloat(result.lon), city: city });
         } else {
           setSearchError(`Could not find location for "${manualCityInput}". Please try another city.`);
@@ -257,8 +263,9 @@ export default function DoctorFlowchart() {
                 }));
                 
                 const searchCity = currentCity?.toLowerCase() || '';
+                const apCities = ['tirupati', 'nellore', 'vijayawada', 'visakhapatnam', 'guntur'];
 
-                if (['tirupati', 'nellore', 'vijayawada', 'visakhapatnam', 'guntur'].includes(searchCity)) {
+                if (apCities.includes(searchCity)) {
                     spec.doctors = spec.doctors.filter((doc: any) => doc.clinic.toLowerCase().includes(searchCity));
                 } else {
                     spec.doctors.sort((a: any, b: any) => a.distance - b.distance);
@@ -268,8 +275,8 @@ export default function DoctorFlowchart() {
             });
 
             newSpecs.sort((a: any, b: any) => {
-                const nearestADoctor = a.doctors.length > 0 ? a.doctors[0].distance : Infinity;
-                const nearestBDoctor = b.doctors.length > 0 ? b.doctors[0].distance : Infinity;
+                const nearestADoctor = a.doctors.length > 0 ? Math.min(...a.doctors.map((d: any) => d.distance)) : Infinity;
+                const nearestBDoctor = b.doctors.length > 0 ? Math.min(...b.doctors.map((d: any) => d.distance)) : Infinity;
                 return nearestADoctor - nearestBDoctor;
             });
         }

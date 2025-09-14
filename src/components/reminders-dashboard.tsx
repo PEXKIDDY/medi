@@ -8,11 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Pill, Calendar, GlassWater, PlusCircle, Trash2, BellRing } from 'lucide-react';
+import { Pill, Calendar, GlassWater, PlusCircle, Trash2, BellRing, BellOff } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Switch } from '@/components/ui/switch';
 
 
 // Schemas for form validation
@@ -62,6 +63,7 @@ export default function RemindersDashboard() {
   const [isApptDialogOpen, setApptDialogOpen] = useState(false);
   const [isHydroDialogOpen, setHydroDialogOpen] = useState(false);
   const [activeAlarm, setActiveAlarm] = useState<ActiveAlarm>(null);
+  const [alarmsEnabled, setAlarmsEnabled] = useState(true);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -73,7 +75,7 @@ export default function RemindersDashboard() {
     }
 
     const checkReminders = () => {
-        if (activeAlarm) return; // Don't check for new alarms if one is already active
+        if (!alarmsEnabled || activeAlarm) return; // Don't check for new alarms if disabled or one is already active
 
         const now = new Date();
         const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
@@ -95,7 +97,7 @@ export default function RemindersDashboard() {
     const intervalId = setInterval(checkReminders, 60000);
 
     return () => clearInterval(intervalId);
-  }, [medications, hydration, activeAlarm]);
+  }, [medications, hydration, activeAlarm, alarmsEnabled]);
   
   useEffect(() => {
     const audio = audioRef.current;
@@ -159,11 +161,20 @@ export default function RemindersDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
+      <div className="text-center relative">
         <h1 className="text-4xl font-bold tracking-tight">Your Reminders</h1>
         <p className="text-muted-foreground mt-2 text-lg">
           Stay organized and on top of your health schedule.
         </p>
+        <div className="absolute top-0 right-0 flex items-center space-x-2">
+            {alarmsEnabled ? <BellRing className="text-primary"/> : <BellOff className="text-muted-foreground"/>}
+            <Label htmlFor="alarm-switch">Enable Alarms</Label>
+            <Switch
+                id="alarm-switch"
+                checked={alarmsEnabled}
+                onCheckedChange={setAlarmsEnabled}
+            />
+        </div>
       </div>
        {activeAlarm && (
             <AlertDialog open={!!activeAlarm} onOpenChange={() => {}}>

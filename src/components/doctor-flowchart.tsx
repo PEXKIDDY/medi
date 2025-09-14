@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Stethoscope, Heart, Brain, Bone, Baby, LocateFixed, WifiOff, AlertCircle } from 'lucide-react';
+import { Stethoscope, Heart, Brain, Bone, Baby, LocateFixed, WifiOff, AlertCircle, MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
@@ -72,12 +72,15 @@ const SpecializationIcons: Record<string, React.ReactNode> = {
 
 export default function DoctorFlowchart() {
   const [nearbyEnabled, setNearbyEnabled] = useState(false);
-  const { location, error, getLocation, clearError } = useGeolocation();
+  const { location, error, loading: loadingLocation, getLocation, clearError } = useGeolocation();
   const [specializations, setSpecializations] = useState(initialSpecializations);
+  const [cityName, setCityName] = useState<string | null>(null);
+  const [loadingCity, setLoadingCity] = useState(false);
 
   const handleToggle = (checked: boolean) => {
     setNearbyEnabled(checked);
     clearError();
+    setCityName(null);
     if (checked) {
       getLocation();
     }
@@ -86,6 +89,7 @@ export default function DoctorFlowchart() {
   useEffect(() => {
     if (error) {
       setNearbyEnabled(false);
+      setCityName(null);
     }
   }, [error]);
 
@@ -93,6 +97,21 @@ export default function DoctorFlowchart() {
     let newSpecs = JSON.parse(JSON.stringify(initialSpecializations));
 
     if (nearbyEnabled && location) {
+      setLoadingCity(true);
+      fetch(`https://geocode.maps.co/reverse?lat=${location.latitude}&lon=${location.longitude}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.address && data.address.city) {
+                setCityName(data.address.city);
+            } else {
+                setCityName("Unknown location");
+            }
+            setLoadingCity(false);
+        }).catch(() => {
+            setCityName("Could not fetch city");
+            setLoadingCity(false);
+        });
+      
       const specsWithDistance = newSpecs.map((spec: any) => {
         const doctorsWithDistance = spec.doctors.map((doc: any) => ({
           ...doc,
@@ -109,6 +128,8 @@ export default function DoctorFlowchart() {
       });
       
       newSpecs = specsWithDistance;
+    } else {
+      setCityName(null);
     }
     
     // Ensure only top 3 doctors are shown per specialization
@@ -132,12 +153,29 @@ export default function DoctorFlowchart() {
             Find the right expert for your healthcare needs from our team of dedicated professionals.
           </p>
         </div>
-        <div className="flex items-center space-x-2 pt-4">
-          <Switch id="nearby-mode" onCheckedChange={handleToggle} checked={nearbyEnabled} />
-          <Label htmlFor="nearby-mode" className="flex flex-col items-center">
-            {nearbyEnabled ? <LocateFixed className="text-primary"/> : <WifiOff/>}
-            <span className="text-xs">Nearby</span>
-          </Label>
+        <div className="flex flex-col items-center pt-4">
+            <div className="flex items-center space-x-2">
+                <Switch id="nearby-mode" onCheckedChange={handleToggle} checked={nearbyEnabled} />
+                <Label htmlFor="nearby-mode" className="flex flex-col items-center">
+                    {nearbyEnabled ? <LocateFixed className="text-primary"/> : <WifiOff/>}
+                    <span className="text-xs">Nearby</span>
+                </Label>
+            </div>
+            {nearbyEnabled && (
+                <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                    {loadingLocation || loadingCity ? (
+                        <>
+                            <MapPin className="h-3 w-3 animate-pulse" />
+                            <span>Determining location...</span>
+                        </>
+                    ) : cityName ? (
+                        <>
+                            <MapPin className="h-3 w-3 text-primary" />
+                            <span>{cityName}</span>
+                        </>
+                    ) : null}
+                </div>
+            )}
         </div>
       </div>
        {error && (

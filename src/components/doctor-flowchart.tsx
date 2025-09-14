@@ -514,7 +514,7 @@ export default function DoctorFlowchart() {
   }, [error]);
 
   useEffect(() => {
-    const processLocation = () => {
+    const processLocation = (currentCity: string) => {
         let newSpecs = JSON.parse(JSON.stringify(initialSpecializations));
         const activeLocation = nearbyEnabled ? location : manualLocation;
         
@@ -522,19 +522,19 @@ export default function DoctorFlowchart() {
         if (manualLocation) {
             displayCity = manualLocation.city;
         } else if (nearbyEnabled && location) {
-            // Placeholder, will be updated by reverse geocoding if possible
-            displayCity = "your location";
+            displayCity = currentCity || "your location";
         }
         setCityName(displayCity);
         
         if (activeLocation) {
-             const searchCityTerm = (manualLocation?.city.split(',')[0] || manualCityInput || '').trim().toLowerCase();
+             const searchCityTerm = (manualLocation?.city.split(',')[0] || currentCity || manualCityInput).trim().toLowerCase();
 
             newSpecs.forEach((spec: any) => {
                 const originalDoctors = spec.doctors;
                 spec.doctors = originalDoctors
                     .filter((doc: any) => {
                         const clinicCity = doc.clinic.toLowerCase();
+                        // Handle cases like "Guntur Municipal Corporation"
                         return clinicCity.includes(searchCityTerm);
                     })
                     .map((doc: any) => ({
@@ -544,14 +544,31 @@ export default function DoctorFlowchart() {
                 
                 spec.doctors.sort((a: any, b: any) => a.distance - b.distance);
             });
+
+             // Filter out specializations with no doctors
+            newSpecs = newSpecs.filter((spec: any) => spec.doctors.length > 0);
         }
         setSpecializations(newSpecs);
         setLoadingCity(false);
     };
 
-    if ((nearbyEnabled && location) || manualLocation) {
+    const reverseGeocode = (lat: number, lon: number) => {
+        fetch(`https://geocode.maps.co/reverse?lat=${lat}&lon=${lon}`)
+            .then(res => res.json())
+            .then(data => {
+                const city = data?.address?.city || data?.address?.town || data?.address?.village || 'your location';
+                processLocation(city);
+            }).catch(() => {
+                processLocation('your location'); // Fallback
+            });
+    }
+
+    if (nearbyEnabled && location) {
       setLoadingCity(true);
-      processLocation();
+      reverseGeocode(location.latitude, location.longitude);
+    } else if (manualLocation) {
+      setLoadingCity(true);
+      processLocation(manualLocation.city.split(',')[0]);
     } else if (!nearbyEnabled && !manualLocation) {
         let newSpecs = JSON.parse(JSON.stringify(initialSpecializations));
         newSpecs.forEach((spec: any) => {

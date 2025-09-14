@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Stethoscope, Heart, Brain, Bone, Baby, LocateFixed, WifiOff, AlertCircle, MapPin, Scan, Scissors, Eye, HelpingHand } from 'lucide-react';
+import { Stethoscope, Heart, Brain, Bone, Baby, LocateFixed, WifiOff, AlertCircle, MapPin, Scan, Scissors, Eye, HelpingHand, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
@@ -10,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { useGeolocation } from '@/hooks/use-geolocation';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import imageData from '@/lib/placeholder-images.json';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
 
 const doctorAvatars = imageData['doctor-avatars'] as Record<string, { seed: string, width: number, height: number }>;
 
@@ -135,17 +137,58 @@ const initialSpecializations = [
 export default function DoctorFlowchart() {
   const [nearbyEnabled, setNearbyEnabled] = useState(false);
   const { location, error, loading: loadingLocation, getLocation, clearError } = useGeolocation();
+  const [manualLocation, setManualLocation] = useState<{latitude: number; longitude: number; city: string} | null>(null);
   const [specializations, setSpecializations] = useState(initialSpecializations);
   const [cityName, setCityName] = useState<string | null>(null);
   const [loadingCity, setLoadingCity] = useState(false);
+  const [manualCityInput, setManualCityInput] = useState('');
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const handleToggle = (checked: boolean) => {
     setNearbyEnabled(checked);
     clearError();
     setCityName(null);
+    setManualLocation(null);
+    setSearchError(null);
     if (checked) {
       getLocation();
+    } else {
+      // If toggled off, reset to the initial full list
+      let newSpecs = JSON.parse(JSON.stringify(initialSpecializations));
+      newSpecs.forEach((spec: any) => {
+        spec.doctors = spec.doctors.slice(0, 3);
+      });
+      setSpecializations(newSpecs);
     }
+  };
+
+  const handleManualSearch = () => {
+    if (!manualCityInput.trim()) {
+      setSearchError("Please enter a city name.");
+      return;
+    }
+    setLoadingCity(true);
+    setSearchError(null);
+    setNearbyEnabled(false);
+    clearError();
+
+    fetch(`https://geocode.maps.co/search?q=${encodeURIComponent(manualCityInput)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          const result = data[0];
+          setManualLocation({ latitude: parseFloat(result.lat), longitude: parseFloat(result.lon), city: result.display_name.split(',')[0] });
+          setCityName(result.display_name.split(',')[0]);
+        } else {
+          setSearchError(`Could not find location for "${manualCityInput}". Please try another city.`);
+          setManualLocation(null);
+          setCityName(null);
+        }
+        setLoadingCity(false);
+      }).catch(() => {
+        setSearchError("Failed to fetch location. Please check your connection.");
+        setLoadingCity(false);
+      });
   };
   
   useEffect(() => {
@@ -157,48 +200,56 @@ export default function DoctorFlowchart() {
 
   useEffect(() => {
     let newSpecs = JSON.parse(JSON.stringify(initialSpecializations));
+    
+    const activeLocation = nearbyEnabled ? location : manualLocation;
+    
+    // Automatically get city name if using geolocation
+    if (nearbyEnabled && location && !manualLocation) {
+        setLoadingCity(true);
+        fetch(`https://geocode.maps.co/reverse?lat=${location.latitude}&lon=${location.longitude}`)
+            .then(res => res.json())
+            .then(data => {
+                const city = data.address?.city || data.address?.town || data.address?.village;
+                if (city) {
+                    setCityName(city);
+                } else {
+                    setCityName("Unknown location");
+                }
+                setLoadingCity(false);
+            }).catch(() => {
+                setCityName("Could not fetch city");
+                setLoadingCity(false);
+            });
+    } else if (manualLocation) {
+        setCityName(manualLocation.city);
+    } else if (!nearbyEnabled) {
+        setCityName(null);
+    }
 
-    if (nearbyEnabled && location) {
-      setLoadingCity(true);
-      fetch(`https://geocode.maps.co/reverse?lat=${location.latitude}&lon=${location.longitude}`)
-        .then(res => res.json())
-        .then(data => {
-            const city = data.address?.city || data.address?.town || data.address?.village;
-            if (city) {
-                setCityName(city);
+    if (activeLocation) {
+        const specsWithDistance = newSpecs.map((spec: any) => {
+            const doctorsWithDistance = spec.doctors.map((doc: any) => ({
+                ...doc,
+                distance: getDistance(activeLocation.latitude, activeLocation.longitude, doc.lat, doc.lon),
+            }));
+
+            if (cityName?.toLowerCase() === 'tirupati') {
+                spec.doctors = doctorsWithDistance.filter((doc: any) => doc.clinic.toLowerCase().includes('tirupati'));
             } else {
-                setCityName("Unknown location");
+                spec.doctors = doctorsWithDistance.sort((a: any, b: any) => a.distance - b.distance).slice(0, 3);
             }
-            setLoadingCity(false);
-        }).catch(() => {
-            setCityName("Could not fetch city");
-            setLoadingCity(false);
+            return spec;
         });
-      
-      const specsWithDistance = newSpecs.map((spec: any) => {
-        const doctorsWithDistance = spec.doctors.map((doc: any) => ({
-          ...doc,
-          distance: getDistance(location.latitude, location.longitude, doc.lat, doc.lon),
-        }));
-        
-        if (cityName === 'Tirupati') {
-            spec.doctors = doctorsWithDistance.filter((doc: any) => doc.clinic.includes('Tirupati'));
-        } else {
-            spec.doctors = doctorsWithDistance.sort((a: any, b: any) => a.distance - b.distance).slice(0,3);
-        }
-        return spec;
-      });
-      
-      specsWithDistance.sort((a: any, b: any) => {
-        const nearestADoctor = a.doctors.length > 0 ? a.doctors[0].distance : Infinity;
-        const nearestBDoctor = b.doctors.length > 0 ? b.doctors[0].distance : Infinity;
-        return nearestADoctor - nearestBDoctor;
-      });
-      
-      newSpecs = specsWithDistance;
+
+        specsWithDistance.sort((a: any, b: any) => {
+            const nearestADoctor = a.doctors.length > 0 ? a.doctors[0].distance : Infinity;
+            const nearestBDoctor = b.doctors.length > 0 ? b.doctors[0].distance : Infinity;
+            return nearestADoctor - nearestBDoctor;
+        });
+
+        newSpecs = specsWithDistance;
     } else {
-      setCityName(null);
-      // Reset to initial top 3 logic if nearby is disabled
+      // Default state: not nearby and no manual search
       newSpecs.forEach((spec: any) => {
           spec.doctors = spec.doctors.slice(0, 3);
       });
@@ -206,7 +257,7 @@ export default function DoctorFlowchart() {
 
     setSpecializations(newSpecs);
 
-  }, [nearbyEnabled, location, cityName]);
+  }, [nearbyEnabled, location, manualLocation, cityName]);
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4 md:p-8">
@@ -220,36 +271,51 @@ export default function DoctorFlowchart() {
             Find the right expert for your healthcare needs from our team of dedicated professionals.
           </p>
         </div>
-        <div className="flex flex-col items-center pt-4">
-            <div className="flex items-center space-x-2">
+        <div className="flex flex-col items-center pt-4 space-y-4 w-64">
+             <div className="flex items-center space-x-2">
                 <Switch id="nearby-mode" onCheckedChange={handleToggle} checked={nearbyEnabled} />
-                <Label htmlFor="nearby-mode" className="flex flex-col items-center">
+                <Label htmlFor="nearby-mode" className="flex flex-col items-center cursor-pointer">
                     {nearbyEnabled ? <LocateFixed className="text-primary"/> : <WifiOff/>}
                     <span className="text-xs">Nearby</span>
                 </Label>
             </div>
-            {nearbyEnabled && (
-                <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+            <div className="w-full space-y-2">
+                <div className="flex w-full max-w-sm items-center space-x-2">
+                    <Input 
+                        type="text" 
+                        placeholder="Enter a city"
+                        value={manualCityInput}
+                        onChange={(e) => setManualCityInput(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleManualSearch()}
+                        disabled={nearbyEnabled}
+                    />
+                    <Button type="button" onClick={handleManualSearch} disabled={nearbyEnabled}>
+                        <Search className="h-4 w-4"/>
+                    </Button>
+                </div>
+            </div>
+             {(nearbyEnabled || manualLocation) && (
+                <div className="text-xs text-muted-foreground flex items-center gap-1 h-4">
                     {loadingLocation || loadingCity ? (
                         <>
                             <MapPin className="h-3 w-3 animate-pulse" />
-                            <span>Determining location...</span>
+                            <span>Finding doctors...</span>
                         </>
                     ) : cityName ? (
                         <>
                             <MapPin className="h-3 w-3 text-primary" />
-                            <span>{cityName}</span>
+                            <span>Showing doctors for {cityName}</span>
                         </>
                     ) : null}
                 </div>
             )}
         </div>
       </div>
-       {error && (
+       {(error || searchError) && (
          <Alert variant="destructive" className="mb-8">
            <AlertCircle className="h-4 w-4" />
            <AlertTitle>Location Error</AlertTitle>
-           <AlertDescription>{error}</AlertDescription>
+           <AlertDescription>{error || searchError}</AlertDescription>
          </Alert>
        )}
 
@@ -288,7 +354,7 @@ export default function DoctorFlowchart() {
                         <Link href={doc.locationUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
                           {doc.clinic}
                         </Link>
-                        {nearbyEnabled && location && (doc as any).distance !== undefined && (
+                        {(nearbyEnabled || manualLocation) && (doc as any).distance !== undefined && (
                           <p className="text-xs text-blue-500">
                             ~{Math.round((doc as any).distance)} km away
                           </p>
@@ -298,7 +364,7 @@ export default function DoctorFlowchart() {
                   );
                 })}
                  {spec.doctors.length === 0 && (
-                  <p className="text-muted-foreground">No doctors found for this specialization.</p>
+                  <p className="text-muted-foreground">No doctors found for this specialization in the selected location.</p>
                 )}
               </div>
             </CardContent>

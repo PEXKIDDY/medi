@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-import { HeartPulse, Bot, Bell } from 'lucide-react';
+import { HeartPulse, Bot, Bell, Search } from 'lucide-react';
 
 export default function Header() {
   return (
@@ -25,6 +25,14 @@ export default function Header() {
         >
           <Bell className="h-6 w-6" />
           <span>Reminders</span>
+        </Link>
+        <Link
+            href="/medi-info"
+            className="flex items-center gap-2 text-lg font-medium hover:underline"
+            prefetch={false}
+        >
+            <Search className="h-6 w-6" />
+            <span>Medi-Info</span>
         </Link>
       </nav>
     </header>

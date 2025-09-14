@@ -16,12 +16,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { Toaster } from "@/components/ui/toaster";
 
 export default function Home() {
   const [isCalling, setIsCalling] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleEmergencyCall = () => {
     setIsCalling(true);

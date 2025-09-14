@@ -52,10 +52,9 @@ export default function EmergencyStatus() {
     <div className="w-full max-w-4xl p-4 md:p-8 space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl text-destructive">
+          <div className="flex items-center justify-center gap-2 text-2xl text-destructive">
             <Ambulance className="h-8 w-8 animate-pulse" />
-            Emergency Response In Progress
-          </CardTitle>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="relative h-64 w-full rounded-lg overflow-hidden border">

@@ -3,9 +3,8 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { getEmergencyUpdates, GetEmergencyUpdatesOutput } from '@/app/ai/flows/get-emergency-updates-flow';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Ambulance, Hospital, Timer, MapPin, AlertCircle, Loader2 } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Ambulance, Hospital, Timer, MapPin, Loader2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 const INITIAL_DISTANCE_KM = 15; // Starting distance
@@ -30,23 +29,30 @@ export default function EmergencyStatus() {
       }
     };
 
-    fetchUpdate(currentDistance);
+    // Fetch initial update
+    fetchUpdate(INITIAL_DISTANCE_KM);
 
+    // Set up interval to simulate ambulance movement and fetch new updates
     const intervalId = setInterval(() => {
       setCurrentDistance(prevDistance => {
-        const newDistance = Math.max(0, prevDistance - (AVG_SPEED_KM_PER_MIN * (10 / 60)));
-        if (newDistance <= 0) {
+        const newDistance = Math.max(0, prevDistance - (AVG_SPEED_KM_PER_MIN * (10 / 60))); // Update every 10 seconds
+        if (newDistance > 0) {
+          fetchUpdate(newDistance);
+        } else {
+           // Once arrived, clear interval and set final state
           clearInterval(intervalId);
+          fetchUpdate(0);
         }
-        fetchUpdate(newDistance);
         return newDistance;
       });
-    }, 10000);
+    }, 10000); // 10-second interval
 
+    // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
-  }, []);
+  }, []); // Empty dependency array ensures this effect runs only once on mount
 
   const progressPercentage = Math.max(0, Math.min(100, ((INITIAL_DISTANCE_KM - currentDistance) / INITIAL_DISTANCE_KM) * 100));
+  const latestUpdate = updates[0];
 
   return (
     <div className="w-full max-w-4xl p-4 md:p-8 space-y-6">
@@ -77,8 +83,8 @@ export default function EmergencyStatus() {
             </div>
             <Progress value={progressPercentage} className="h-4" />
             <div className="flex justify-between items-center text-xs text-muted-foreground">
-                <span>{currentDistance?.toFixed(1) ?? '...'} km to destination</span>
-                <span>ETA: {updates[0]?.eta ?? 'Calculating...'}</span>
+                <span>{currentDistance.toFixed(1)} km to destination</span>
+                <span>ETA: {latestUpdate?.eta ?? 'Calculating...'}</span>
             </div>
           </div>
         </CardContent>
@@ -86,10 +92,10 @@ export default function EmergencyStatus() {
       
       <Card>
           <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <div className="flex items-center gap-2 font-semibold text-lg">
                 <Timer />
                 Live Updates
-              </CardTitle>
+              </div>
           </CardHeader>
           <CardContent className="space-y-4">
               {isFetchingUpdate && updates.length === 0 && (

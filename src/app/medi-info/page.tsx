@@ -41,6 +41,14 @@ export default function MediInfoPage() {
                         Search for any medication to get detailed information.
                     </p>
                 </div>
+                
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Disclaimer</AlertTitle>
+                    <AlertDescription>
+                        Please consult with a qualified healthcare professional before taking any medication. This information is for educational purposes only and not a substitute for professional medical advice.
+                    </AlertDescription>
+                </Alert>
 
                 <div className="flex w-full items-center space-x-2">
                     <Input
@@ -100,13 +108,6 @@ export default function MediInfoPage() {
                                 </div>
                             </CardContent>
                         </Card>
-                        <Alert variant="destructive">
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertTitle>Disclaimer</AlertTitle>
-                            <AlertDescription>
-                                Please consult with a qualified healthcare professional before taking any medication. This information is for educational purposes only and not a substitute for professional medical advice.
-                            </AlertDescription>
-                        </Alert>
                     </div>
                 )}
             </div>

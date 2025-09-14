@@ -385,11 +385,8 @@ export default function DoctorFlowchart() {
       .then(data => {
         if (data && data.length > 0) {
           const result = data[0];
-          // A more robust way to find the city name from the display_name
-          const address = result.address || {};
-          const city = address.city || address.town || address.village || result.display_name.split(',')[0];
-          
-          setManualLocation({ latitude: parseFloat(result.lat), longitude: parseFloat(result.lon), city: city });
+          const displayName = result.display_name || '';
+          setManualLocation({ latitude: parseFloat(result.lat), longitude: parseFloat(result.lon), city: displayName });
         } else {
           setSearchError(`Could not find location for "${manualCityInput}". Please try another city.`);
           setManualLocation(null);
@@ -410,40 +407,34 @@ export default function DoctorFlowchart() {
   }, [error]);
 
   useEffect(() => {
-    const processLocation = async () => {
+    const processLocation = () => {
         let newSpecs = JSON.parse(JSON.stringify(initialSpecializations));
         const activeLocation = nearbyEnabled ? location : manualLocation;
-        let currentCity = null;
-
-        setLoadingCity(true);
-
-        // Determine current city
-        if (activeLocation) {
-          try {
-              const res = await fetch(`https://geocode.maps.co/reverse?lat=${activeLocation.latitude}&lon=${activeLocation.longitude}`);
-              if (!res.ok) throw new Error('Reverse geocoding failed');
-              const data = await res.json();
-              currentCity = data.address?.city || data.address?.town || data.address?.village || "Unknown location";
-          } catch {
-              currentCity = "Could not fetch city";
-          }
-        }
         
-        setCityName(currentCity);
+        let displayCity = "";
+        if (manualLocation) {
+            displayCity = manualLocation.city;
+        } else if (nearbyEnabled && location) {
+            // Placeholder, will be updated by reverse geocoding if possible
+            displayCity = "your location";
+        }
+        setCityName(displayCity);
+        
+        if (activeLocation) {
+            const searchCityTerm = manualCityInput.trim().toLowerCase();
 
-        if (activeLocation && currentCity) {
-            const searchCity = currentCity.toLowerCase();
-            
-            newSpecs = newSpecs.map((spec: any) => {
+            newSpecs.forEach((spec: any) => {
                 spec.doctors = spec.doctors
-                    .filter((doc: any) => doc.clinic.toLowerCase().includes(searchCity))
+                    .filter((doc: any) => {
+                        const clinicCity = doc.clinic.toLowerCase();
+                        return clinicCity.includes(searchCityTerm);
+                    })
                     .map((doc: any) => ({
                         ...doc,
                         distance: getDistance(activeLocation.latitude, activeLocation.longitude, doc.lat, doc.lon),
                     }));
-
+                
                 spec.doctors.sort((a: any, b: any) => a.distance - b.distance);
-                return spec;
             });
         }
         setSpecializations(newSpecs);
@@ -451,6 +442,7 @@ export default function DoctorFlowchart() {
     };
 
     if ((nearbyEnabled && location) || manualLocation) {
+      setLoadingCity(true);
       processLocation();
     } else if (!nearbyEnabled && !manualLocation) {
         let newSpecs = JSON.parse(JSON.stringify(initialSpecializations));
@@ -460,7 +452,7 @@ export default function DoctorFlowchart() {
         setSpecializations(newSpecs);
         setCityName(null);
     }
-  }, [nearbyEnabled, location, manualLocation]);
+  }, [nearbyEnabled, location, manualLocation, manualCityInput]);
 
 
   return (
@@ -508,7 +500,7 @@ export default function DoctorFlowchart() {
                     ) : cityName ? (
                         <>
                             <MapPin className="h-3 w-3 text-primary" />
-                            <span>Showing doctors for {cityName}</span>
+                            <span>Showing doctors for {cityName.split(',')[0]}</span>
                         </>
                     ) : null}
                 </div>

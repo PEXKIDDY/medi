@@ -255,22 +255,18 @@ export default function DoctorFlowchart() {
 
         setCityName(currentCity);
 
-        if (activeLocation) {
+        if (activeLocation && currentCity) {
+            const searchCity = currentCity.toLowerCase();
+            
             newSpecs = newSpecs.map((spec: any) => {
-                spec.doctors = spec.doctors.map((doc: any) => ({
-                    ...doc,
-                    distance: getDistance(activeLocation.latitude, activeLocation.longitude, doc.lat, doc.lon),
-                }));
-                
-                const searchCity = currentCity?.toLowerCase() || '';
-                const apCities = ['tirupati', 'nellore', 'vijayawada', 'visakhapatnam', 'guntur'];
+                spec.doctors = spec.doctors
+                    .map((doc: any) => ({
+                        ...doc,
+                        distance: getDistance(activeLocation.latitude, activeLocation.longitude, doc.lat, doc.lon),
+                    }))
+                    .filter((doc: any) => doc.clinic.toLowerCase().includes(searchCity));
 
-                if (apCities.includes(searchCity)) {
-                    spec.doctors = spec.doctors.filter((doc: any) => doc.clinic.toLowerCase().includes(searchCity));
-                } else {
-                    spec.doctors.sort((a: any, b: any) => a.distance - b.distance);
-                    spec.doctors = spec.doctors.slice(0, 3);
-                }
+                spec.doctors.sort((a: any, b: any) => a.distance - b.distance);
                 return spec;
             });
 
@@ -284,15 +280,15 @@ export default function DoctorFlowchart() {
         setLoadingCity(false);
     };
 
-    if (nearbyEnabled && location) {
-      processLocation();
-    } else if (manualLocation) {
+    if ((nearbyEnabled && location) || manualLocation) {
       processLocation();
     } else if (!nearbyEnabled && !manualLocation) {
         let newSpecs = JSON.parse(JSON.stringify(initialSpecializations));
         newSpecs.forEach((spec: any) => {
           spec.doctors.forEach((doc: any) => delete doc.distance);
         });
+        // Reset sort order to default
+        newSpecs.sort((a: any, b: any) => initialSpecializations.findIndex(s => s.name === a.name) - initialSpecializations.findIndex(s => s.name === b.name));
         setSpecializations(newSpecs);
         setCityName(null);
     }

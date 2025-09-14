@@ -72,33 +72,42 @@ export default function MediInfoPage() {
                 )}
 
                 {result && (
-                    <Card>
-                        <CardHeader>
-                             <div className="flex items-center gap-4">
-                                <div className="bg-primary text-primary-foreground p-3 rounded-full">
-                                    <FileText className="h-6 w-6" />
+                    <>
+                        <Card>
+                            <CardHeader>
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-primary text-primary-foreground p-3 rounded-full">
+                                        <FileText className="h-6 w-6" />
+                                    </div>
+                                    <div>
+                                        <CardTitle>{medicationName}</CardTitle>
+                                        <CardDescription>Information about this medication.</CardDescription>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-2">Primary Use</h3>
+                                    <p className="text-sm text-muted-foreground">{result.primaryUse}</p>
                                 </div>
                                 <div>
-                                    <CardTitle>{medicationName}</CardTitle>
-                                    <CardDescription>Information about this medication.</CardDescription>
+                                    <h3 className="font-semibold text-lg mb-2">How It Works</h3>
+                                    <p className="text-sm text-muted-foreground">{result.howItWorks}</p>
                                 </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <h3 className="font-semibold text-lg mb-2">Primary Use</h3>
-                                <p className="text-sm text-muted-foreground">{result.primaryUse}</p>
-                            </div>
-                             <div>
-                                <h3 className="font-semibold text-lg mb-2">How It Works</h3>
-                                <p className="text-sm text-muted-foreground">{result.howItWorks}</p>
-                            </div>
-                             <div>
-                                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2"><Pill/> Common Side Effects</h3>
-                                <div className="text-sm text-muted-foreground whitespace-pre-wrap">{result.commonSideEffects}</div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-2 flex items-center gap-2"><Pill/> Common Side Effects</h3>
+                                    <div className="text-sm text-muted-foreground whitespace-pre-wrap">{result.commonSideEffects}</div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Alert variant="destructive" className="mt-4">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>Disclaimer</AlertTitle>
+                            <AlertDescription>
+                                Please consult with a qualified healthcare professional before taking any medication. This information is for educational purposes only and not a substitute for professional medical advice.
+                            </AlertDescription>
+                        </Alert>
+                    </>
                 )}
             </div>
         </div>

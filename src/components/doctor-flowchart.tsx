@@ -400,7 +400,7 @@ const initialSpecializations = [
         { name: 'Dr. C. R. Reddy', degree: 'MD, DVL', avatar: 'CRR', clinic: 'Skinova Clinic, Vijayawada', lat: 16.51, lon: 80.64, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Skinova+Clinic+Vijayawada' },
         { name: 'Dr. S. K. Reddy', degree: 'MD, DVL', avatar: 'SKR', clinic: 'Dr. S.K. Skin Clinic, Visakhapatnam', lat: 17.72, lon: 83.3, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Dr.+S.K.+Skin+Clinic+Visakhapatnam' },
         { name: 'Dr. S. Prasanth', degree: 'MBBS, DDVL', avatar: 'SPra', clinic: 'Prasanth Skin Clinic, Tirupati', lat: 13.6288, lon: 79.4192, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Prasanth+Skin+Clinic+Tirupati' },
-        { name: 'Dr. G. V. Rao', degree: 'MD, DVL', avatar: 'GVR', clinic: 'V-Care Skin Clinic, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=V-Care+Skin+Clinic+Nellore' },
+        { name: 'Dr. G. V. Rao', degree: 'MD, DVL', avatar: 'GVRao', clinic: 'V-Care Skin Clinic, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=V-Care+Skin+Clinic+Nellore' },
         { name: 'Dr. K. Swaroop', degree: 'MD, DVL', avatar: 'KSwa', clinic: 'Swaroop Skin Clinic, Chittoor', lat: 13.2173, lon: 79.1005, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Swaroop+Skin+Clinic+Chittoor' },
         { name: 'Dr. N. S. Rao', degree: 'MD, DVL', avatar: 'NSRao', clinic: 'Sri Sai Skin Clinic, Ananthapur', lat: 14.6819, lon: 77.6006, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sri+Sai+Skin+Clinic+Anantapur' },
         { name: 'Dr. V. Nagesh', degree: 'MD, DVL', avatar: 'VNagesh', clinic: 'Dr. Nagesh Skin Clinic, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Dr.+Nagesh+Skin+Clinic+Bhimavaram' },
@@ -512,7 +512,8 @@ export default function DoctorFlowchart() {
                 spec.doctors = originalDoctors
                     .filter((doc: any) => {
                         const clinicCity = doc.clinic.toLowerCase();
-                        // Make matching more flexible
+                        // Make matching more flexible by checking if the clinic city includes the search term.
+                        // This helps with cases like "Guntur Municipal Corporation" vs "Guntur".
                         return clinicCity.includes(searchCityTerm);
                     })
                     .map((doc: any) => ({

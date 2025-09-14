@@ -205,12 +205,8 @@ export default function DoctorFlowchart() {
         if (data && data.length > 0) {
           const result = data[0];
           // A more robust way to find the city name from the display_name
-          const addressParts = result.display_name.split(',').map((part: string) => part.trim());
-          const city = addressParts.find((part: string, index: number) => {
-              // Heuristic: city is often before the postcode or state
-              const nextPart = addressParts[index + 1];
-              return nextPart && /^\d+$/.test(nextPart); // check if next part is postcode
-          }) || result.address?.city || result.address?.town || result.address?.village || addressParts[0];
+          const address = result.address || {};
+          const city = address.city || address.town || address.village || address.county || manualCityInput;
 
           setManualLocation({ latitude: parseFloat(result.lat), longitude: parseFloat(result.lon), city: city });
         } else {

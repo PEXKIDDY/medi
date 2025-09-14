@@ -41,18 +41,39 @@ const appointmentSchema = z.object({
   location: z.string().min(1, "Location is required."),
   dateTime: z.string().min(1, "Date and time are required.").refine(val => !isNaN(Date.parse(val)), {
     message: "Invalid date and time."
-  })
+  }),
+  recurrenceType: z.enum(['daily', 'custom']),
+  recurrenceDays: z.array(z.string()).optional(),
+}).refine(data => {
+    if (data.recurrenceType === 'custom' && (!data.recurrenceDays || data.recurrenceDays.length === 0)) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Please select at least one day for custom recurrence.",
+    path: ["recurrenceDays"],
 });
+
 
 const hydrationSchema = z.object({
   amount: z.string().min(1, "Amount is required (e.g., 250ml)."),
-  time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format (HH:MM).")
+  time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format (HH:MM)."),
+  recurrenceType: z.enum(['daily', 'custom']),
+  recurrenceDays: z.array(z.string()).optional(),
+}).refine(data => {
+    if (data.recurrenceType === 'custom' && (!data.recurrenceDays || data.recurrenceDays.length === 0)) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Please select at least one day for custom recurrence.",
+    path: ["recurrenceDays"],
 });
 
 type Medication = z.infer<typeof medicationSchema> & { id: number; taken: boolean };
 type Appointment = z.infer<typeof appointmentSchema> & { id: number };
 type Hydration = z.infer<typeof hydrationSchema> & { id: number; taken: boolean };
-type ActiveAlarm = { type: 'med' | 'hydro', id: number, name: string } | null;
+type ActiveAlarm = { type: 'med' | 'hydro' | 'appt', id: number, name: string } | null;
 
 const weekDays = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
@@ -63,20 +84,26 @@ export default function RemindersDashboard() {
     { id: 2, name: 'Metformin', dosage: '500mg', time: '20:00', taken: false, recurrenceType: 'custom', recurrenceDays: ['mon', 'wed', 'fri'] },
   ]);
   const [appointments, setAppointments] = useState<Appointment[]>([
-    { id: 1, doctor: 'Dr. Evelyn Reed', specialization: 'Cardiology', location: 'Heartbeat Clinic', dateTime: '2024-08-15T10:30' },
+    { id: 1, doctor: 'Dr. Evelyn Reed', specialization: 'Cardiology', location: 'Heartbeat Clinic', dateTime: '2024-08-15T10:30', recurrenceType: 'daily', recurrenceDays: [] },
   ]);
   const [hydration, setHydration] = useState<Hydration[]>([
-     { id: 1, amount: '250ml', time: '09:00', taken: true },
-     { id: 2, amount: '250ml', time: '11:00', taken: false },
-     { id: 3, amount: '250ml', time: '13:00', taken: false },
+     { id: 1, amount: '250ml', time: '09:00', taken: true, recurrenceType: 'daily', recurrenceDays: [] },
+     { id: 2, amount: '250ml', time: '11:00', taken: false, recurrenceType: 'daily', recurrenceDays: [] },
+     { id: 3, amount: '250ml', time: '13:00', taken: false, recurrenceType: 'daily', recurrenceDays: [] },
   ]);
 
-  const { control, register: medRegister, handleSubmit: handleMedSubmit, reset: medReset, formState: { errors: medErrors }, watch } = useForm<z.infer<typeof medicationSchema>>({ 
+  const { control: medControl, register: medRegister, handleSubmit: handleMedSubmit, reset: medReset, formState: { errors: medErrors }, watch: medWatch } = useForm<z.infer<typeof medicationSchema>>({ 
     resolver: zodResolver(medicationSchema),
     defaultValues: { recurrenceType: 'daily', recurrenceDays: [] }
   });
-  const { register: apptRegister, handleSubmit: handleApptSubmit, reset: apptReset, formState: { errors: apptErrors } } = useForm<z.infer<typeof appointmentSchema>>({ resolver: zodResolver(appointmentSchema) });
-  const { register: hydroRegister, handleSubmit: handleHydroSubmit, reset: hydroReset, formState: { errors: hydroErrors } } = useForm<z.infer<typeof hydrationSchema>>({ resolver: zodResolver(hydrationSchema) });
+  const { control: apptControl, register: apptRegister, handleSubmit: handleApptSubmit, reset: apptReset, formState: { errors: apptErrors }, watch: apptWatch } = useForm<z.infer<typeof appointmentSchema>>({ 
+    resolver: zodResolver(appointmentSchema),
+    defaultValues: { recurrenceType: 'daily', recurrenceDays: [] }
+  });
+  const { control: hydroControl, register: hydroRegister, handleSubmit: handleHydroSubmit, reset: hydroReset, formState: { errors: hydroErrors }, watch: hydroWatch } = useForm<z.infer<typeof hydrationSchema>>({ 
+    resolver: zodResolver(hydrationSchema),
+    defaultValues: { recurrenceType: 'daily', recurrenceDays: [] }
+  });
   
   const [isMedDialogOpen, setMedDialogOpen] = useState(false);
   const [isApptDialogOpen, setApptDialogOpen] = useState(false);
@@ -86,7 +113,9 @@ export default function RemindersDashboard() {
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const recurrenceType = watch('recurrenceType');
+  const medRecurrenceType = medWatch('recurrenceType');
+  const apptRecurrenceType = apptWatch('recurrenceType');
+  const hydroRecurrenceType = hydroWatch('recurrenceType');
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !audioRef.current) {
@@ -113,9 +142,37 @@ export default function RemindersDashboard() {
             return;
         }
 
-        const dueHydration = hydration.find(h => h.time === currentTime && !h.taken);
+        const dueHydration = hydration.find(h => {
+          if (h.time !== currentTime || h.taken) return false;
+          if (h.recurrenceType === 'daily') return true;
+          if (h.recurrenceType === 'custom' && h.recurrenceDays?.includes(currentDay)) return true;
+          return false;
+        });
+
         if (dueHydration) {
-            setActiveAlarm({ type: 'hydro', id: dueHydration.id, name: `${dueHydration.amount} of water` });
+            setActiveAlarm({ type: 'hydro', id: dueHydration.id, name: `${h.amount} of water` });
+            return;
+        }
+
+        const dueAppointment = appointments.find(a => {
+            const apptDate = new Date(a.dateTime);
+            const apptTime = `${apptDate.getHours().toString().padStart(2, '0')}:${apptDate.getMinutes().toString().padStart(2, '0')}`;
+            if(apptTime !== currentTime) return false;
+            
+            if (a.recurrenceType === 'daily') return true;
+            if (a.recurrenceType === 'custom' && a.recurrenceDays?.includes(currentDay)) return true;
+
+            // For non-recurring appointments, check if it's today
+            if(a.recurrenceType !== 'daily' && (!a.recurrenceDays || a.recurrenceDays.length === 0)) {
+              return apptDate.getFullYear() === now.getFullYear() &&
+                     apptDate.getMonth() === now.getMonth() &&
+                     apptDate.getDate() === now.getDate();
+            }
+            return false;
+        });
+
+        if (dueAppointment) {
+            setActiveAlarm({ type: 'appt', id: dueAppointment.id, name: `Appointment with ${dueAppointment.doctor}` });
             return;
         }
     };
@@ -123,7 +180,7 @@ export default function RemindersDashboard() {
     const intervalId = setInterval(checkReminders, 1000); // Check every second
 
     return () => clearInterval(intervalId);
-  }, [medications, hydration, activeAlarm, alarmsEnabled]);
+  }, [medications, hydration, appointments, activeAlarm, alarmsEnabled]);
   
   useEffect(() => {
     const audio = audioRef.current;
@@ -156,14 +213,25 @@ export default function RemindersDashboard() {
   };
 
   const addAppointment = (data: z.infer<typeof appointmentSchema>) => {
-    setAppointments([...appointments, { ...data, id: Date.now() }]);
-    apptReset({ doctor: '', specialization: '', location: '', dateTime: '' });
+    const newAppt = {
+        ...data,
+        id: Date.now(),
+        recurrenceDays: data.recurrenceType === 'daily' ? weekDays : data.recurrenceDays
+    };
+    setAppointments([...appointments, newAppt]);
+    apptReset({ doctor: '', specialization: '', location: '', dateTime: '', recurrenceType: 'daily', recurrenceDays: [] });
     setApptDialogOpen(false);
   };
   
   const addHydration = (data: z.infer<typeof hydrationSchema>) => {
-    setHydration([...hydration, { ...data, id: Date.now(), taken: false }]);
-    hydroReset({ amount: '', time: '' });
+    const newHydro = {
+        ...data,
+        id: Date.now(),
+        taken: false,
+        recurrenceDays: data.recurrenceType === 'daily' ? weekDays : data.recurrenceDays
+    };
+    setHydration([...hydration, newHydro]);
+    hydroReset({ amount: '', time: '', recurrenceType: 'daily', recurrenceDays: [] });
     setHydroDialogOpen(false);
   };
   
@@ -183,19 +251,22 @@ export default function RemindersDashboard() {
   
   const handleAlarmAction = (markAsTaken: boolean) => {
     if (activeAlarm) {
-        if (markAsTaken) {
+        if (markAsTaken && activeAlarm.type !== 'appt') {
             toggleTaken(activeAlarm.id, activeAlarm.type);
         }
         setActiveAlarm(null);
     }
   }
 
-  const getRecurrenceText = (med: Medication) => {
-    if (med.recurrenceType === 'daily' || (med.recurrenceDays && med.recurrenceDays.length === 7)) return 'Daily';
-    if (med.recurrenceType === 'custom' && med.recurrenceDays) {
-        if(med.recurrenceDays.length === 2 && med.recurrenceDays.includes('sat') && med.recurrenceDays.includes('sun')) return 'Weekends';
-        if(med.recurrenceDays.length === 5 && !med.recurrenceDays.includes('sat') && !med.recurrenceDays.includes('sun')) return 'Weekdays';
-        return med.recurrenceDays.map(d => d.charAt(0).toUpperCase() + d.slice(1)).join(', ');
+  const getRecurrenceText = (item: Medication | Hydration | Appointment) => {
+    if (item.recurrenceType === 'daily' || (item.recurrenceDays && item.recurrenceDays.length === 7)) return 'Daily';
+    if (item.recurrenceType === 'custom' && item.recurrenceDays && item.recurrenceDays.length > 0) {
+        if(item.recurrenceDays.length === 2 && item.recurrenceDays.includes('sat') && item.recurrenceDays.includes('sun')) return 'Weekends';
+        if(item.recurrenceDays.length === 5 && !item.recurrenceDays.includes('sat') && !item.recurrenceDays.includes('sun')) return 'Weekdays';
+        return item.recurrenceDays.map(d => d.charAt(0).toUpperCase() + d.slice(1)).join(', ');
+    }
+     if ('dateTime' in item) {
+        return `One-time: ${new Date(item.dateTime).toLocaleDateString()}`;
     }
     return 'Daily';
   };
@@ -229,7 +300,7 @@ export default function RemindersDashboard() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel onClick={() => handleAlarmAction(false)}>Dismiss</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleAlarmAction(true)}>Mark as Taken</AlertDialogAction>
+                        {activeAlarm.type !== 'appt' && <AlertDialogAction onClick={() => handleAlarmAction(true)}>Mark as Taken</AlertDialogAction>}
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
@@ -276,28 +347,28 @@ export default function RemindersDashboard() {
                                 <Label>Recurrence</Label>
                                 <Controller
                                     name="recurrenceType"
-                                    control={control}
+                                    control={medControl}
                                     render={({ field }) => (
                                         <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4 mt-2">
                                             <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="daily" id="daily"/>
-                                                <Label htmlFor="daily">Daily</Label>
+                                                <RadioGroupItem value="daily" id="med-daily"/>
+                                                <Label htmlFor="med-daily">Daily</Label>
                                             </div>
                                             <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="custom" id="custom"/>
-                                                <Label htmlFor="custom">Custom</Label>
+                                                <RadioGroupItem value="custom" id="med-custom"/>
+                                                <Label htmlFor="med-custom">Custom</Label>
                                             </div>
                                         </RadioGroup>
                                     )}
                                 />
                             </div>
 
-                            {recurrenceType === 'custom' && (
+                            {medRecurrenceType === 'custom' && (
                                 <div>
                                     <Label>Select Days</Label>
                                     <Controller
                                         name="recurrenceDays"
-                                        control={control}
+                                        control={medControl}
                                         render={({ field }) => (
                                             <ToggleGroup type="multiple" variant="outline" onValueChange={field.onChange} defaultValue={field.value} className="flex-wrap justify-start gap-1 mt-2">
                                                 {weekDays.map(day => (
@@ -375,6 +446,43 @@ export default function RemindersDashboard() {
                                   <Input id="dateTime" type="datetime-local" {...apptRegister('dateTime')} />
                                   {apptErrors.dateTime && <p className="text-destructive text-sm mt-1">{apptErrors.dateTime.message}</p>}
                               </div>
+                               <div>
+                                <Label>Recurrence</Label>
+                                <Controller
+                                    name="recurrenceType"
+                                    control={apptControl}
+                                    render={({ field }) => (
+                                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4 mt-2">
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="daily" id="appt-daily"/>
+                                                <Label htmlFor="appt-daily">Daily</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="custom" id="appt-custom"/>
+                                                <Label htmlFor="appt-custom">Custom</Label>
+                                            </div>
+                                        </RadioGroup>
+                                    )}
+                                />
+                            </div>
+
+                            {apptRecurrenceType === 'custom' && (
+                                <div>
+                                    <Label>Select Days</Label>
+                                    <Controller
+                                        name="recurrenceDays"
+                                        control={apptControl}
+                                        render={({ field }) => (
+                                            <ToggleGroup type="multiple" variant="outline" onValueChange={field.onChange} defaultValue={field.value} className="flex-wrap justify-start gap-1 mt-2">
+                                                {weekDays.map(day => (
+                                                    <ToggleGroupItem key={day} value={day} className="w-12 h-12 capitalize">{day}</ToggleGroupItem>
+                                                ))}
+                                            </ToggleGroup>
+                                        )}
+                                    />
+                                    {apptErrors.recurrenceDays && <p className="text-destructive text-sm mt-1">{apptErrors.recurrenceDays.message}</p>}
+                                </div>
+                            )}
                               <DialogFooter>
                                   <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
                                   <Button type="submit">Add Reminder</Button>
@@ -392,7 +500,8 @@ export default function RemindersDashboard() {
                     <div>
                       <p className="font-semibold text-lg">{appt.doctor} <span className="text-sm font-medium text-muted-foreground">({appt.specialization})</span></p>
                       <p className="text-muted-foreground">{appt.location}</p>
-                      <p className="text-primary font-medium">{new Date(appt.dateTime).toLocaleString()}</p>
+                      <p className="text-primary font-medium">{new Date(appt.dateTime).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                       <p className='text-sm text-muted-foreground'>{getRecurrenceText(appt)}</p>
                     </div>
                   </div>
                   <Button variant="ghost" size="icon" onClick={() => deleteReminder(appt.id, 'appt')}><Trash2 className="text-destructive"/></Button>
@@ -429,6 +538,43 @@ export default function RemindersDashboard() {
                                   <Input id="time-hydro" type="time" {...hydroRegister('time')} />
                                   {hydroErrors.time && <p className="text-destructive text-sm mt-1">{hydroErrors.time.message}</p>}
                               </div>
+                               <div>
+                                <Label>Recurrence</Label>
+                                <Controller
+                                    name="recurrenceType"
+                                    control={hydroControl}
+                                    render={({ field }) => (
+                                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4 mt-2">
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="daily" id="hydro-daily"/>
+                                                <Label htmlFor="hydro-daily">Daily</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="custom" id="hydro-custom"/>
+                                                <Label htmlFor="hydro-custom">Custom</Label>
+                                            </div>
+                                        </RadioGroup>
+                                    )}
+                                />
+                            </div>
+
+                            {hydroRecurrenceType === 'custom' && (
+                                <div>
+                                    <Label>Select Days</Label>
+                                    <Controller
+                                        name="recurrenceDays"
+                                        control={hydroControl}
+                                        render={({ field }) => (
+                                            <ToggleGroup type="multiple" variant="outline" onValueChange={field.onChange} defaultValue={field.value} className="flex-wrap justify-start gap-1 mt-2">
+                                                {weekDays.map(day => (
+                                                    <ToggleGroupItem key={day} value={day} className="w-12 h-12 capitalize">{day}</ToggleGroupItem>
+                                                ))}
+                                            </ToggleGroup>
+                                        )}
+                                    />
+                                    {hydroErrors.recurrenceDays && <p className="text-destructive text-sm mt-1">{hydroErrors.recurrenceDays.message}</p>}
+                                </div>
+                            )}
                               <DialogFooter>
                                   <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
                                   <Button type="submit">Add Reminder</Button>
@@ -443,9 +589,12 @@ export default function RemindersDashboard() {
                  <div key={hydro.id} className="flex items-center justify-between p-4 rounded-lg border bg-card">
                     <div className="flex items-center gap-4">
                       <Checkbox id={`hydro-${hydro.id}`} checked={hydro.taken} onCheckedChange={() => toggleTaken(hydro.id, 'hydro')} />
-                      <Label htmlFor={`hydro-${hydro.id}`} className={`text-lg ${hydro.taken ? 'line-through text-muted-foreground' : ''}`}>
-                        <span className="font-semibold">{hydro.amount}</span> of water at {hydro.time}
-                      </Label>
+                      <div>
+                        <Label htmlFor={`hydro-${hydro.id}`} className={`text-lg ${hydro.taken ? 'line-through text-muted-foreground' : ''}`}>
+                          <span className="font-semibold">{hydro.amount}</span> of water at {hydro.time}
+                        </Label>
+                        <p className='text-sm text-muted-foreground'>{getRecurrenceText(hydro)}</p>
+                      </div>
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => deleteReminder(hydro.id, 'hydro')}><Trash2 className="text-destructive"/></Button>
                 </div>
@@ -458,5 +607,3 @@ export default function RemindersDashboard() {
     </div>
   );
 }
-
-    

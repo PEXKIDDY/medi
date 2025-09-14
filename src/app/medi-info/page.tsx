@@ -72,7 +72,7 @@ export default function MediInfoPage() {
                 )}
 
                 {result && (
-                    <>
+                    <div className="space-y-4">
                         <Card>
                             <CardHeader>
                                 <div className="flex items-center gap-4">
@@ -100,14 +100,14 @@ export default function MediInfoPage() {
                                 </div>
                             </CardContent>
                         </Card>
-                        <Alert variant="destructive" className="mt-4">
+                        <Alert variant="destructive">
                             <AlertCircle className="h-4 w-4" />
                             <AlertTitle>Disclaimer</AlertTitle>
                             <AlertDescription>
                                 Please consult with a qualified healthcare professional before taking any medication. This information is for educational purposes only and not a substitute for professional medical advice.
                             </AlertDescription>
                         </Alert>
-                    </>
+                    </div>
                 )}
             </div>
         </div>

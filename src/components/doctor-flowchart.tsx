@@ -546,14 +546,16 @@ export default function DoctorFlowchart() {
                 {spec.doctors.map((doc) => {
                   const avatarData = doctorAvatars[doc.name];
                   const avatarSrc = avatarData ? `https://picsum.photos/seed/${avatarData.seed}/${avatarData.width}/${avatarData.height}` : `https://i.pravatar.cc/150?u=${doc.avatar}`;
+                  const imageWidth = avatarData ? avatarData.width : 150;
+                  const imageHeight = avatarData ? avatarData.height : 150;
                   return (
                     <div key={doc.name} className="flex items-center gap-4">
                       <Avatar className="h-12 w-12">
                         <Image
                           src={avatarSrc}
                           alt={`Portrait of ${doc.name}`}
-                          width={60}
-                          height={60}
+                          width={imageWidth}
+                          height={imageHeight}
                           className="rounded-full"
                           data-ai-hint="doctor portrait"
                         />

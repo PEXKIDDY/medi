@@ -21,6 +21,14 @@ const GynecologyIcon = () => (
     </svg>
 );
 
+const DermatologyIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"></path>
+        <path d="M20.59 22c-3.95-3.95-12.28-3.95-16.23 0"></path>
+        <path d="M16 16c0-2.21-1.79-4-4-4s-4 1.79-4 4"></path>
+    </svg>
+);
+
 
 const specializationIcons: { [key: string]: React.ReactNode } = {
   Cardiology: <Heart className="h-8 w-8 text-red-500" />,
@@ -31,6 +39,7 @@ const specializationIcons: { [key: string]: React.ReactNode } = {
   Radiology: <Scan className="h-8 w-8 text-indigo-500" />,
   "General Surgery": <Scissors className="h-8 w-8 text-orange-500" />,
   Ophthalmology: <Eye className="h-8 w-8 text-teal-500" />,
+  Dermatology: <DermatologyIcon />,
 };
 
 // Helper function to calculate distance (Haversine formula)
@@ -112,6 +121,14 @@ const initialSpecializations = [
         { name: 'Dr. Priya S', degree: 'DO, DNB', avatar: 'PS3', clinic: 'Narayana Nethralaya, Bangalore', lat: 12.9351, lon: 77.6245, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Narayana+Nethralaya+Koramangala' },
     ],
   },
+  {
+    name: 'Dermatology',
+    doctors: [
+        { name: 'Dr. Neha Sharma', degree: 'MD, Dermatology', avatar: 'NS', clinic: 'Kaya Skin Clinic, Bangalore', lat: 12.9279, lon: 77.6271, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Kaya+Skin+Clinic+Koramangala' },
+        { name: 'Dr. Sudhakar Reddy', degree: 'MD, DVL', avatar: 'SRe', clinic: 'Apollo Skin Clinic, Tirupati', lat: 13.6295, lon: 79.418, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Clinic+Tirupati' },
+        { name: 'Dr. Swetha', degree: 'MBBS, DDVL', avatar: 'SW', clinic: ' Oliva Skin & Hair Clinic, Hyderabad', lat: 17.4435, lon: 78.3804, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Oliva+Skin+%26+Hair+Clinic+Hyderabad' },
+    ],
+  },
 ];
 
 
@@ -146,8 +163,9 @@ export default function DoctorFlowchart() {
       fetch(`https://geocode.maps.co/reverse?lat=${location.latitude}&lon=${location.longitude}`)
         .then(res => res.json())
         .then(data => {
-            if (data.address && data.address.city) {
-                setCityName(data.address.city);
+            const city = data.address?.city || data.address?.town || data.address?.village;
+            if (city) {
+                setCityName(city);
             } else {
                 setCityName("Unknown location");
             }
@@ -162,7 +180,12 @@ export default function DoctorFlowchart() {
           ...doc,
           distance: getDistance(location.latitude, location.longitude, doc.lat, doc.lon),
         }));
-        spec.doctors = doctorsWithDistance.sort((a: any, b: any) => a.distance - b.distance);
+        
+        if (cityName === 'Tirupati') {
+            spec.doctors = doctorsWithDistance.filter((doc: any) => doc.clinic.includes('Tirupati'));
+        } else {
+            spec.doctors = doctorsWithDistance.sort((a: any, b: any) => a.distance - b.distance).slice(0,3);
+        }
         return spec;
       });
       
@@ -175,16 +198,15 @@ export default function DoctorFlowchart() {
       newSpecs = specsWithDistance;
     } else {
       setCityName(null);
+      // Reset to initial top 3 logic if nearby is disabled
+      newSpecs.forEach((spec: any) => {
+          spec.doctors = spec.doctors.slice(0, 3);
+      });
     }
-    
-    // Ensure only top 3 doctors are shown per specialization
-    newSpecs.forEach((spec: any) => {
-        spec.doctors = spec.doctors.slice(0, 3);
-    });
 
     setSpecializations(newSpecs);
 
-  }, [nearbyEnabled, location]);
+  }, [nearbyEnabled, location, cityName]);
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4 md:p-8">

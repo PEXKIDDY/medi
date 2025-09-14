@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,9 +24,8 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 export default function ProfilePage() {
     const [isSaving, setIsSaving] = useState(false);
     const { toast } = useToast();
-    const { register, handleSubmit, formState: { errors } } = useForm<ProfileFormValues>({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
-        // You can load default/saved values here
         defaultValues: {
             name: '',
             phone: '',
@@ -35,12 +34,21 @@ export default function ProfilePage() {
         }
     });
 
+    useEffect(() => {
+        // Load saved data from localStorage when the component mounts
+        const savedData = localStorage.getItem('userProfile');
+        if (savedData) {
+            reset(JSON.parse(savedData));
+        }
+    }, [reset]);
+
     const onSubmit = (data: ProfileFormValues) => {
         setIsSaving(true);
         console.log("Profile data:", data);
 
         // Simulate saving data
         setTimeout(() => {
+            localStorage.setItem('userProfile', JSON.stringify(data));
             setIsSaving(false);
             toast({
                 title: "Profile Saved",

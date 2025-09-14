@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DoctorFlowchart from '@/components/doctor-flowchart';
 import { Button } from '@/components/ui/button';
@@ -21,11 +21,26 @@ import { Toaster } from "@/components/ui/toaster";
 
 export default function Home() {
   const [isCalling, setIsCalling] = useState(false);
+  const [emergencyContact, setEmergencyContact] = useState<string | null>(null);
   const router = useRouter();
   const { toast } = useToast();
 
+  useEffect(() => {
+    // Ensure this runs only on the client
+    const profileData = localStorage.getItem('userProfile');
+    if (profileData) {
+      const profile = JSON.parse(profileData);
+      setEmergencyContact(profile.emergencyContact);
+    }
+  }, []);
+
   const handleEmergencyCall = () => {
     setIsCalling(true);
+
+    if (emergencyContact) {
+      window.location.href = `tel:${emergencyContact}`;
+    }
+
     toast({
       title: "Connecting to Emergency Services",
       description: "You are being connected to the nearest emergency service. Please stay on the line.",
@@ -58,7 +73,7 @@ export default function Home() {
             <AlertDialogHeader>
               <AlertDialogTitle>Confirm Emergency</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to call emergency services? This should only be used in a genuine emergency.
+                Are you sure you want to call emergency services? {emergencyContact ? `This will also attempt to call your emergency contact: ${emergencyContact}.` : "This should only be used in a genuine emergency."}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

@@ -69,13 +69,13 @@ export default function RemindersDashboard() {
 
   useEffect(() => {
     // Initialize Audio on client
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !audioRef.current) {
         audioRef.current = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
         audioRef.current.loop = true;
     }
 
     const checkReminders = () => {
-        if (!alarmsEnabled || activeAlarm) return; // Don't check for new alarms if disabled or one is already active
+        if (!alarmsEnabled || activeAlarm) return;
 
         const now = new Date();
         const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
@@ -102,7 +102,7 @@ export default function RemindersDashboard() {
   useEffect(() => {
     const audio = audioRef.current;
     if (activeAlarm && audio) {
-        audio.play().catch(e => console.error("Audio playback failed:", e));
+        audio.play().catch(e => console.error("Audio playback failed. This can happen if the user hasn't interacted with the page yet.", e));
     } else if (audio) {
         audio.pause();
         audio.currentTime = 0;
@@ -177,7 +177,7 @@ export default function RemindersDashboard() {
         </div>
       </div>
        {activeAlarm && (
-            <AlertDialog open={!!activeAlarm} onOpenChange={() => {}}>
+            <AlertDialog open={!!activeAlarm} onOpenChange={(isOpen) => { if(!isOpen) handleAlarmAction(false)}}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle className="flex items-center gap-2"><BellRing className="text-primary animate-bounce"/>Reminder: It's Time!</AlertDialogTitle>

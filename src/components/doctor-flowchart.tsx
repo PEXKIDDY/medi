@@ -161,6 +161,9 @@ const initialSpecializations = [
         { name: 'Dr. Somasekhar', degree: 'MS (Gen Surg)', avatar: 'Som', clinic: 'Govt. General Hospital, Guntur', lat: 16.306, lon: 80.43, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+General+Hospital+Guntur' },
         { name: 'Dr. Imtiaz', degree: 'MS (Gen Surg)', avatar: 'Imt', clinic: 'Govt. General Hospital, Kadapa', lat: 14.475, lon: 78.825, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+General+Hospital+Kadapa' },
         { name: 'Dr. Nagarjuna', degree: 'MS (Gen Surg)', avatar: 'Nag', clinic: 'Govt. General Hospital, Ananthapur', lat: 14.6819, lon: 77.6006, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+General+Hospital+Anantapur' },
+        { name: 'Dr. Anand Kumar B', degree: 'MS, Gen Surgery', avatar: 'AKB', clinic: 'CMC Hospital, Chittoor', lat: 13.2173, lon: 79.1005, locationUrl: 'https://www.google.com/maps/search/?api=1&query=CMC+Hospital+Chittoor' },
+        { name: 'Dr. Satish Kumar', degree: 'MS (Gen Surg)', avatar: 'SKu2', clinic: 'Sai Hospitals, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sai+Hospital+Nellore' },
+        { name: 'Dr. S. Ramesh', degree: 'MS (Gen Surg)', avatar: 'SRa2', clinic: 'Ramesh Hospitals, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Ramesh+Hospitals+Bhimavaram' }
     ],
   },
   {
@@ -176,6 +179,8 @@ const initialSpecializations = [
         { name: 'Dr. S. Khan', degree: 'MS, DO', avatar: 'SKhan', clinic: 'Modern Eye Hospital, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Modern+Eye+Hospital+Nellore' },
         { name: 'Dr. Venkataswamy', degree: 'MS (Ophth)', avatar: 'Ven', clinic: 'Govt. Eye Hospital, Kadapa', lat: 14.4668, lon: 78.8222, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+Eye+Hospital+Kadapa' },
         { name: 'Dr. Balaji', degree: 'MS (Ophth)', avatar: 'Bal', clinic: 'Balaji Eye Hospital, Ananthapur', lat: 14.6819, lon: 77.6006, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Balaji+Eye+Hospital+Anantapur' },
+        { name: 'Dr. Reddy Eye Hospital', degree: 'MS, DO', avatar: 'REH', clinic: 'Dr. Reddy Eye Hospital, Chittoor', lat: 13.2173, lon: 79.1005, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Dr+Reddy+Eye+Hospital+Chittoor' },
+        { name: 'Dr. Shankar Rao', degree: 'MS (Ophth)', avatar: 'ShaR', clinic: 'Shankar Eye Hospital, Rajahmundry', lat: 17.0005, lon: 81.8040, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Shankar+Eye+Hospital+Rajahmundry' },
     ],
   },
   {
@@ -191,6 +196,8 @@ const initialSpecializations = [
         { name: 'Dr. Saritha', degree: 'MD, DVL', avatar: 'Sari', clinic: 'Kosmoderma, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Kosmoderma+Nellore' },
         { name: 'Dr. Obul Reddy', degree: 'MD, DVL', avatar: 'OR', clinic: 'Skin & Hair Clinic, Kadapa', lat: 14.4668, lon: 78.8222, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Skin+and+Hair+Clinic+Kadapa' },
         { name: 'Dr. Amarnath', degree: 'MD, DVL', avatar: 'Ama', clinic: 'Amaravathi Skin Clinic, Ananthapur', lat: 14.6819, lon: 77.6006, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Amaravathi+Skin+Clinic+Anantapur' },
+        { name: 'Dr. P. S. Murthy', degree: 'MD, DVL', avatar: 'PSM', clinic: 'GSL Medical College, Rajahmundry', lat: 17.0005, lon: 81.8040, locationUrl: 'https://www.google.com/maps/search/?api=1&query=GSL+Medical+College+Rajahmundry' },
+        { name: 'Dr. Vani Skin Clinic', degree: 'MBBS, DD', avatar: 'VSC', clinic: 'Vani Skin Clinic, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Vani+Skin+Clinic+Bhimavaram' }
     ],
   },
 ];
@@ -246,9 +253,9 @@ export default function DoctorFlowchart() {
         if (data && data.length > 0) {
           const result = data[0];
           // A more robust way to find the city name from the display_name
-          const displayNameParts = result.display_name.split(', ');
-          const city = displayNameParts.find((part: string) => ['city', 'town', 'village'].includes(part.toLowerCase())) || displayNameParts[0] || manualCityInput;
-
+          const address = result.address || {};
+          const city = address.city || address.town || address.village || result.display_name.split(',')[0];
+          
           setManualLocation({ latitude: parseFloat(result.lat), longitude: parseFloat(result.lon), city: city });
         } else {
           setSearchError(`Could not find location for "${manualCityInput}". Please try another city.`);
@@ -278,18 +285,17 @@ export default function DoctorFlowchart() {
         setLoadingCity(true);
 
         // Determine current city
-        if (nearbyEnabled && location) {
-            try {
-                const res = await fetch(`https://geocode.maps.co/reverse?lat=${location.latitude}&lon=${location.longitude}`);
-                const data = await res.json();
-                currentCity = data.address?.city || data.address?.town || data.address?.village || "Unknown location";
-            } catch {
-                currentCity = "Could not fetch city";
-            }
-        } else if (manualLocation) {
-            currentCity = manualLocation.city;
+        if (activeLocation) {
+          try {
+              const res = await fetch(`https://geocode.maps.co/reverse?lat=${activeLocation.latitude}&lon=${activeLocation.longitude}`);
+              if (!res.ok) throw new Error('Reverse geocoding failed');
+              const data = await res.json();
+              currentCity = data.address?.city || data.address?.town || data.address?.village || "Unknown location";
+          } catch {
+              currentCity = "Could not fetch city";
+          }
         }
-
+        
         setCityName(currentCity);
 
         if (activeLocation && currentCity) {
@@ -307,10 +313,11 @@ export default function DoctorFlowchart() {
                 return spec;
             });
 
+            // Sort specializations to show ones with doctors first
             newSpecs.sort((a: any, b: any) => {
-                const nearestADoctor = a.doctors.length > 0 ? Math.min(...a.doctors.map((d: any) => d.distance)) : Infinity;
-                const nearestBDoctor = b.doctors.length > 0 ? Math.min(...b.doctors.map((d: any) => d.distance)) : Infinity;
-                return nearestADoctor - nearestBDoctor;
+                if (a.doctors.length > 0 && b.doctors.length === 0) return -1;
+                if (a.doctors.length === 0 && b.doctors.length > 0) return 1;
+                return 0;
             });
         }
         setSpecializations(newSpecs);

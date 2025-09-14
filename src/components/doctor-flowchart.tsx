@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Stethoscope, Heart, Brain, Bone, Baby, LocateFixed, WifiOff, AlertCircle, MapPin } from 'lucide-react';
+import { Stethoscope, Heart, Brain, Bone, Baby, LocateFixed, WifiOff, AlertCircle, MapPin, Scan, Scissors, Eye, HelpingHand } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
@@ -13,11 +13,24 @@ import imageData from '@/lib/placeholder-images.json';
 
 const doctorAvatars = imageData['doctor-avatars'] as Record<string, { seed: string, width: number, height: number }>;
 
+const GynecologyIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-500">
+        <circle cx="12" cy="12" r="4"></circle>
+        <line x1="12" y1="16" x2="12" y2="22"></line>
+        <line x1="9" y1="19" x2="15" y2="19"></line>
+    </svg>
+);
+
+
 const specializationIcons: { [key: string]: React.ReactNode } = {
   Cardiology: <Heart className="h-8 w-8 text-red-500" />,
   Neurology: <Brain className="h-8 w-8 text-purple-500" />,
   Orthopedics: <Bone className="h-8 w-8 text-gray-500" />,
   Pediatrics: <Baby className="h-8 w-8 text-blue-500" />,
+  Gynecology: <GynecologyIcon />,
+  Radiology: <Scan className="h-8 w-8 text-indigo-500" />,
+  "General Surgery": <Scissors className="h-8 w-8 text-orange-500" />,
+  Ophthalmology: <Eye className="h-8 w-8 text-teal-500" />,
 };
 
 // Helper function to calculate distance (Haversine formula)
@@ -65,6 +78,38 @@ const initialSpecializations = [
         { name: 'Dr. Rajesh Nair', degree: 'MD, Pediatrics', avatar: 'RN', clinic: 'Rainbow Children\'s Hospital', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Rainbow+Childrens+Hospital+Bangalore' },
         { name: 'Dr. Meena Iyer', degree: 'DNB, Pediatrics', avatar: 'MI', clinic: 'Kanchi Kamakoti Childs Trust', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Kanchi+Kamakoti+Childs+Trust+Hospital+Chennai' },
         { name: 'Dr. Sita Ram', degree: 'MD (Peds)', avatar: 'SR', clinic: 'Amara Hospital, Tirupati', lat: 13.6288, lon: 79.4192, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Amara+Hospital+Tirupati' },
+    ],
+  },
+  {
+    name: 'Gynecology',
+    doctors: [
+        { name: 'Dr. Lakshmi S', degree: 'MS (OBG)', avatar: 'LS', clinic: 'Lotus Hospital, Tirupati', lat: 13.6359, lon: 79.4243, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Lotus+Hospital+Tirupati' },
+        { name: 'Dr. Kavitha G', degree: 'DGO, DNB', avatar: 'KG', clinic: 'Apollo Cradle, Bangalore', lat: 12.9080, lon: 77.6444, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Cradle+Brookefield+Bangalore' },
+        { name: 'Dr. Parvathy S', degree: 'MD, DGO', avatar: 'PS2', clinic: 'SIMS Hospital, Chennai', lat: 13.0069, lon: 80.2205, locationUrl: 'https://www.google.com/maps/search/?api=1&query=SIMS+Hospital+Chennai' },
+    ],
+  },
+  {
+    name: 'Radiology',
+    doctors: [
+        { name: 'Dr. Anand M', degree: 'MD, Radiology', avatar: 'AM', clinic: 'SVIMS, Tirupati', lat: 13.6288, lon: 79.4192, locationUrl: 'https://www.google.com/maps/search/?api=1&query=SVIMS+Tirupati' },
+        { name: 'Dr. Suresh Kumar', degree: 'DMRD', avatar: 'SK2', clinic: 'Vijaya Diagnostic Centre, Hyderabad', lat: 17.412, lon: 78.435, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Vijaya+Diagnostic+Centre+Hyderabad' },
+        { name: 'Dr. Deepa S', degree: 'MD, Radiology', avatar: 'DS', clinic: 'Manipal Hospital, Bangalore', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Manipal+Hospital+Old+Airport+Road+Bangalore' },
+    ],
+  },
+  {
+    name: 'General Surgery',
+    doctors: [
+        { name: 'Dr. Bhaskar Rao', degree: 'MS, Gen Surgery', avatar: 'BR', clinic: 'Yashoda Hospitals, Hyderabad', lat: 17.4065, lon: 78.4772, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Yashoda+Hospitals+Somajiguda' },
+        { name: 'Dr. Chenna Reddy', degree: 'MS, DNB', avatar: 'CR', clinic: 'Helios Hospital, Tirupati', lat: 13.627, lon: 79.420, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Helios+Hospital+Tirupati' },
+        { name: 'Dr. Murali N', degree: 'MS, FRCS', avatar: 'MN', clinic: 'MIOT International, Chennai', lat: 13.0185, lon: 80.1983, locationUrl: 'https://www.google.com/maps/search/?api=1&query=MIOT+International+Chennai' },
+    ],
+  },
+  {
+    name: 'Ophthalmology',
+    doctors: [
+        { name: 'Dr. Ravi Kumar', degree: 'MS, Ophthalmology', avatar: 'RK', clinic: 'L V Prasad Eye Institute, Hyderabad', lat: 17.4241, lon: 78.4526, locationUrl: 'https://www.google.com/maps/search/?api=1&query=L+V+Prasad+Eye+Institute+Hyderabad' },
+        { name: 'Dr. Agarwal', degree: 'MS, FICO', avatar: 'AG', clinic: 'Dr. Agarwals Eye Hospital, Tirupati', lat: 13.633, lon: 79.418, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Dr+Agarwals+Eye+Hospital+Tirupati' },
+        { name: 'Dr. Priya S', degree: 'DO, DNB', avatar: 'PS3', clinic: 'Narayana Nethralaya, Bangalore', lat: 12.9351, lon: 77.6245, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Narayana+Nethralaya+Koramangala' },
     ],
   },
 ];

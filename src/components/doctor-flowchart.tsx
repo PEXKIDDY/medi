@@ -88,6 +88,8 @@ const initialSpecializations = [
       { name: 'Dr. V. Surya Prakasa Rao', degree: 'MD, DM', avatar: 'VSPR', clinic: 'King George Hospital, Visakhapatnam', lat: 17.7126, lon: 83.2984, locationUrl: 'https://www.google.com/maps/search/?api=1&query=King+George+Hospital+Visakhapatnam' },
       { name: 'Dr. A. Sarath Kumar', degree: 'DM (Cardio)', avatar: 'ASK', clinic: 'SGS Hospitals, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=SGS+Hospitals+Nellore' },
       { name: 'Dr. Praveen Kumar', degree: 'MD, DNB (Cardio)', avatar: 'PKPra', clinic: 'Prashanth Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Prashanth+Hospital+Bhimavaram' },
+      { name: 'Dr. S. K. Naidu', degree: 'MD, DM (Cardio)', avatar: 'SKN', clinic: 'Coastal Heart Care, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Coastal+Heart+Care+Bhimavaram' },
+      { name: 'Dr. B. V. R. Murthy', degree: 'MD, DNB (Cardio)', avatar: 'BVRM', clinic: 'Sanjivi Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sanjivi+Hospital+Bhimavaram' },
       { name: 'Dr. R. R. Ravi', degree: 'MD, DM (Cardio)', avatar: 'RRR', clinic: 'St. Ann\'s Hospital, Chittoor', lat: 13.2173, lon: 79.1005, locationUrl: 'https://www.google.com/maps/search/?api=1&query=St.+Ann\'s+Hospital+Chittoor' },
       { name: 'Dr. Murali Krishna', degree: 'MD, DM', avatar: 'MK', clinic: 'Prathima Hospital, Karimnagar', lat: 18.4386, lon: 79.1288, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Prathima+Hospital+Karimnagar' },
       { name: 'Dr. V. Sudhakar', degree: 'MD, DM', avatar: 'VSu', clinic: 'Sudha Heart Center, Kadapa', lat: 14.4668, lon: 78.8222, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sudha+Heart+Center+Kadapa' },
@@ -116,6 +118,8 @@ const initialSpecializations = [
       { name: 'Dr. B. C. M. Prasad', degree: 'MD, DM', avatar: 'BCMP', clinic: 'NIMS, Tirupati', lat: 13.62, lon: 79.41, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Narayana+Medical+College+Hospital+Tirupati' },
       { name: 'Dr. S. K. Rao', degree: 'MD, DM (Neuro)', avatar: 'SKRao', clinic: 'Govt. Hospital, Chittoor', lat: 13.2173, lon: 79.1005, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+Hospital+Chittoor' },
       { name: 'Dr. N. V. S. Mohan', degree: 'MD, DM (Neuro)', avatar: 'NVSM', clinic: 'Sri Krishna Neuro Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sri+Krishna+Neuro+Hospital+Bhimavaram' },
+      { name: 'Dr. R. V. Kumar', degree: 'MD, DM (Neuro)', avatar: 'RVK', clinic: 'Padmavathi Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Padmavathi+Hospital+Bhimavaram' },
+      { name: 'Dr. G. Prasad', degree: 'MD, DM (Neuro)', avatar: 'GPr', clinic: 'Life Care Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Life+Care+Hospital+Bhimavaram' },
       { name: 'Dr. C. R. Reddy', degree: 'MD, DM (Neuro)', avatar: 'CRRe', clinic: 'Sree Neuro Clinic, Ananthapur', lat: 14.6819, lon: 77.6006, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sree+Neuro+Clinic+Anantapur' },
       { name: 'Dr. B. Rajendra Prasad', degree: 'MD, DM', avatar: 'BRP', clinic: 'Manipal Hospitals, Vijayawada', lat: 16.518, lon: 80.622, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Manipal+Hospitals+Vijayawada' },
       { name: 'Dr. G. Satyanarayana', degree: 'MD, DM', avatar: 'GSa', clinic: 'King George Hospital, Visakhapatnam', lat: 17.7126, lon: 83.2984, locationUrl: 'https://www.google.com/maps/search/?api=1&query=King+George+Hospital+Visakhapatnam' },
@@ -136,6 +140,9 @@ const initialSpecializations = [
       { name: 'Dr. Ramana Reddy', degree: 'MS (Ortho)', avatar: 'RRe', clinic: 'RIMS General Hospital, Kadapa', lat: 14.475, lon: 78.825, locationUrl: 'https://www.google.com/maps/search/?api=1&query=RIMS+General+Hospital+Kadapa' },
       { name: 'Dr. Bhargava Reddy', degree: 'MS (Ortho)', avatar: 'BRRe', clinic: 'Ashok Hospital, Chittoor', lat: 13.2173, lon: 79.1005, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Ashok+Hospital+Chittoor' },
       { name: 'Dr. Subhash Chandra', degree: 'MS (Ortho)', avatar: 'SCB', clinic: 'Life Hospital, Ananthapur', lat: 14.6819, lon: 77.6006, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Life+Hospital+Anantapur' },
+      { name: 'Dr. P. Prakash', degree: 'MS (Ortho)', avatar: 'PPra', clinic: 'Global Hospitals, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Global+Hospitals+Bhimavaram' },
+      { name: 'Dr. M. Satyanarayana', degree: 'MS (Ortho)', avatar: 'MSat', clinic: 'Satya Ortho Clinic, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Satya+Ortho+Clinic+Bhimavaram' },
+      { name: 'Dr. G. Raju', degree: 'MS, DNB (Ortho)', avatar: 'GRa', clinic: 'Govt. Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+Hospital+Bhimavaram' },
       { name: 'Dr. A. V. Gurava Reddy', degree: 'MS (Ortho)', avatar: 'AVGR', clinic: 'Sunshine Hospitals, Hyderabad', lat: 17.443, lon: 78.473, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sunshine+Hospitals+Secunderabad' },
       { name: 'Dr. N. S. Rao', degree: 'MS (Ortho)', avatar: 'NSR', clinic: 'KIMS Hospital, Hyderabad', lat: 17.424, lon: 78.448, locationUrl: 'https://www.google.com/maps/search/?api=1&query=KIMS+Hospital+Secunderabad' },
       { name: 'Dr. Raghuveer Reddy', degree: 'MS (Ortho)', avatar: 'RR', clinic: 'Apollo Hospitals, Hyderabad', lat: 17.437, lon: 78.448, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Hospitals+Jubilee+Hills' },
@@ -161,6 +168,8 @@ const initialSpecializations = [
         { name: 'Dr. K. S. Devi', degree: 'MD, DCH', avatar: 'KSD', clinic: 'Indus Hospitals, Visakhapatnam', lat: 17.74, lon: 83.32, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Indus+Hospitals+Visakhapatnam' },
         { name: 'Dr. S. K. Sharma', degree: 'MD (Peds)', avatar: 'SKS', clinic: 'Govt. General Hospital, Ananthapur', lat: 14.6819, lon: 77.6006, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+General+Hospital+Anantapur' },
         { name: 'Dr. Geetha Prakash', degree: 'DCH', avatar: 'GP', clinic: 'Geetha Nursing Home, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Geetha+Nursing+Home+Bhimavaram' },
+        { name: 'Dr. M. Kishore', degree: 'MD, DCH', avatar: 'MKis', clinic: 'Kishore Childrens Clinic, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Kishore+Childrens+Clinic+Bhimavaram' },
+        { name: 'Dr. S. V. Rao', degree: 'DNB (Peds)', avatar: 'SVRao', clinic: 'Life Childrens Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Life+Childrens+Hospital+Bhimavaram' },
         { name: 'Dr. Jagan Mohan', degree: 'MD (Peds)', avatar: 'JM', clinic: 'Mother & Child Hospital, Guntur', lat: 16.306, lon: 80.45, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Mother+and+Child+Hospital+Guntur' },
         { name: 'Dr. Lavanya', degree: 'DNB (Peds)', avatar: 'Lav', clinic: 'Sree Krishna Childrens Hospital, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sree+Krishna+Childrens+Hospital+Nellore' },
         { name: 'Dr. Prasad Babu', degree: 'MD (Peds)', avatar: 'PBa', clinic: 'Prasad Childrens Hospital, Kadapa', lat: 14.4668, lon: 78.8222, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Prasad+Childrens+Hospital+Kadapa' },
@@ -203,6 +212,8 @@ const initialSpecializations = [
         { name: 'Dr. Sarada', degree: 'MD, DGO', avatar: 'Sar', clinic: 'Sarada Nursing Home, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sarada+Nursing+Home+Nellore' },
         { name: 'Dr. P. Jayasree', degree: 'MD, DGO', avatar: 'PJ', clinic: 'Guntur Govt Hospital, Guntur', lat: 16.306, lon: 80.43, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+General+Hospital+Guntur' },
         { name: 'Dr. Hemalatha', degree: 'MD (OBG)', avatar: 'Hem', clinic: 'Bollineni Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Bollineni+Hospital+Bhimavaram' },
+        { name: 'Dr. S. Kumari', degree: 'MS, DGO', avatar: 'SKumari', clinic: 'Sri Devi Maternity Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sri+Devi+Maternity+Hospital+Bhimavaram' },
+        { name: 'Dr. Anjali Devi', degree: 'MD (OBG)', avatar: 'ADevi', clinic: 'Anjali Nursing Home, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Anjali+Nursing+Home+Bhimavaram' },
         { name: 'Dr. S. Padmavathi', degree: 'MD (OBG)', avatar: 'SPad', clinic: 'Padmavathi Nursing Home, Ananthapur', lat: 14.6819, lon: 77.6006, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Padmavathi+Nursing+Home+Anantapur' },
         { name: 'Dr. M. Sujatha', degree: 'MD, DGO', avatar: 'MSuj', clinic: 'Govt. Hospital, Rajahmundry', lat: 17.0005, lon: 81.8040, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+Hospital+Rajahmundry' },
         { name: 'Dr. G. Lakshmi', degree: 'MS (OBG)', avatar: 'GLak', clinic: 'Govt. Hospital, Chittoor', lat: 13.2173, lon: 79.1005, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+Hospital+Chittoor' },
@@ -232,6 +243,8 @@ const initialSpecializations = [
         { name: 'Dr. G. V. Mohan Prasad', degree: 'MD (Radiology)', avatar: 'GVMP', clinic: 'Queen\'s NRI Hospital, Visakhapatnam', lat: 17.72, lon: 83.31, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Queen%27s+NRI+Hospital+Visakhapatnam' },
         { name: 'Dr. S. K. Jain', degree: 'MD (Radiology)', avatar: 'SKJ', clinic: 'MGM Hospital, Chennai', lat: 13.0604, lon: 80.2495, locationUrl: 'https://www.google.com/maps/search/?api=1&query=MGM+Healthcare+Chennai' },
         { name: 'Dr. K. Raghavendra', degree: 'MD (Radiology)', avatar: 'KRa', clinic: 'SV Diagnostic Centre, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=SV+Diagnostic+Centre+Bhimavaram' },
+        { name: 'Dr. Ch. Krishna', degree: 'MD (Radiology)', avatar: 'CKr', clinic: 'Krishna Diagnostics, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Krishna+Diagnostics+Bhimavaram' },
+        { name: 'Dr. V. Sharma', degree: 'DMRD', avatar: 'VSha', clinic: 'Apollo Scan Center, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Scan+Center+Bhimavaram' },
         { name: 'Dr. P. R. Kumar', degree: 'DMRD', avatar: 'PRK', clinic: 'Apollo Scan Centre, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Scan+Centre+Nellore' },
         { name: 'Dr. R. Balaji', degree: 'MD (Radiology)', avatar: 'RBal', clinic: 'Balaji Scan Centre, Chittoor', lat: 13.2173, lon: 79.1005, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Balaji+Scan+Centre+Chittoor' },
         { name: 'Dr. S. Harish', degree: 'MD (Radiology)', avatar: 'SHa', clinic: 'Harish Scan Centre, Ananthapur', lat: 14.6819, lon: 77.6006, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Harish+Scan+Centre+Anantapur' },
@@ -256,6 +269,8 @@ const initialSpecializations = [
         { name: 'Dr. Anand Kumar B', degree: 'MS, Gen Surgery', avatar: 'AKB', clinic: 'CMC Hospital, Chittoor', lat: 13.2173, lon: 79.1005, locationUrl: 'https://www.google.com/maps/search/?api=1&query=CMC+Hospital+Chittoor' },
         { name: 'Dr. Satish Kumar', degree: 'MS (Gen Surg)', avatar: 'SKu2', clinic: 'Sai Hospitals, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sai+Hospital+Nellore' },
         { name: 'Dr. S. Ramesh', degree: 'MS (Gen Surg)', avatar: 'SRa2', clinic: 'Ramesh Hospitals, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Ramesh+Hospitals+Bhimavaram' },
+        { name: 'Dr. K. Rajesh', degree: 'MS, FIAGES', avatar: 'KRaj', clinic: 'Surya Surgical Center, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Surya+Surgical+Center+Bhimavaram' },
+        { name: 'Dr. P. V. Ramana', degree: 'MS (Gen Surg)', avatar: 'PVRa', clinic: 'SVR Surgical Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=SVR+Surgical+Hospital+Bhimavaram' },
         { name: 'Dr. C. R. K. Prasad', degree: 'MS, FRCS', avatar: 'CRKP', clinic: 'Apollo Hospitals, Hyderabad', lat: 17.437, lon: 78.448, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Hospitals+Jubilee+Hills' },
         { name: 'Dr. B. Nageshwar Reddy', degree: 'MD, DM, FAMS', avatar: 'BNR', clinic: 'AIG Hospitals, Hyderabad', lat: 17.462, lon: 78.378, locationUrl: 'https://www.google.com/maps/search/?api=1&query=AIG+Hospitals+Gachibowli' },
         { name: 'Dr. M. Adinarayana', degree: 'MS (Gen Surg)', avatar: 'MAd', clinic: 'Katuri Medical College, Guntur', lat: 16.35, lon: 80.5, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Katuri+Medical+College+Guntur' },
@@ -280,6 +295,8 @@ const initialSpecializations = [
         { name: 'Dr. V. K. Raju', degree: 'MS, FICO', avatar: 'VKR', clinic: 'Vasan Eye Care, Vijayawada', lat: 16.51, lon: 80.64, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Vasan+Eye+Care+Vijayawada' },
         { name: 'Dr. S. M. Rao', degree: 'MS', avatar: 'SMR', clinic: 'Lions Cancer Hospital, Visakhapatnam', lat: 17.73, lon: 83.31, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Lions+Cancer+Hospital+Visakhapatnam' },
         { name: 'Dr. K. Srinivas', degree: 'MS (Ophth)', avatar: 'KSr', clinic: 'Srinivasa Eye Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Srinivasa+Eye+Hospital+Bhimavaram' },
+        { name: 'Dr. G. Ravi', degree: 'MS, DO', avatar: 'GRavi', clinic: 'Ravi Eye Clinic, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Ravi+Eye+Clinic+Bhimavaram' },
+        { name: 'Dr. A. Sudhakar', degree: 'MS', avatar: 'ASud', clinic: 'Sudhakar Eye Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sudhakar+Eye+Hospital+Bhimavaram' },
         { name: 'Dr. Mohan Raj', degree: 'MS, DO', avatar: 'MRaj', clinic: 'Sankara Eye Hospital, Guntur', lat: 16.32, lon: 80.42, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sankara+Eye+Hospital+Guntur' },
         { name: 'Dr. S. Khan', degree: 'MS, DO', avatar: 'SKhan', clinic: 'Modern Eye Hospital, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Modern+Eye+Hospital+Nellore' },
         { name: 'Dr. Venkataswamy', degree: 'MS (Ophth)', avatar: 'Ven', clinic: 'Govt. Eye Hospital, Kadapa', lat: 14.4668, lon: 78.8222, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+Eye+Hospital+Kadapa' },
@@ -294,7 +311,6 @@ const initialSpecializations = [
         { name: 'Dr. M. S. Reddy', degree: 'MS, DO', avatar: 'MSRed', clinic: 'Swetcha Eye Hospital, Tirupati', lat: 13.6288, lon: 79.4192, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Swetcha+Eye+Hospital+Tirupati' },
         { name: 'Dr. V. Seshaiah', degree: 'MS (Ophth)', avatar: 'VSes', clinic: 'Vasan Eye Care, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Vasan+Eye+Care+Nellore' },
         { name: 'Dr. L. V. Prasad', degree: 'MS', avatar: 'LVP', clinic: 'Lions Eye Hospital, Guntur', lat: 16.306, lon: 80.45, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Lions+Eye+Hospital+Guntur' },
-        { name: 'Dr. A. Sudhakar', degree: 'MS', avatar: 'ASud', clinic: 'Sudhakar Eye Hospital, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sudhakar+Eye+Hospital+Bhimavaram' },
         { name: 'Dr. T. Venugopal', degree: 'MS', avatar: 'TVen', clinic: 'Venkateswara Nethralayam, Ananthapur', lat: 14.6819, lon: 77.6006, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Venkateswara+Nethralayam+Anantapur' },
         { name: 'Dr. P. Rajasekhar', degree: 'MS', avatar: 'PRaj', clinic: 'RIMS, Kadapa', lat: 14.475, lon: 78.825, locationUrl: 'https://www.google.com/maps/search/?api=1&query=RIMS+General+Hospital+Kadapa' },
         { name: 'Dr. S. Subba Rao', degree: 'MS', avatar: 'SSRao', clinic: 'Sankar Eye Hospital, Rajahmundry', lat: 17.0005, lon: 81.8040, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sankar+Eye+Hospital+Rajahmundry' },
@@ -316,6 +332,8 @@ const initialSpecializations = [
         { name: 'Dr. Amarnath', degree: 'MD, DVL', avatar: 'Ama', clinic: 'Amaravathi Skin Clinic, Ananthapur', lat: 14.6819, lon: 77.6006, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Amaravathi+Skin+Clinic+Anantapur' },
         { name: 'Dr. P. S. Murthy', degree: 'MD, DVL', avatar: 'PSM', clinic: 'GSL Medical College, Rajahmundry', lat: 17.0005, lon: 81.8040, locationUrl: 'https://www.google.com/maps/search/?api=1&query=GSL+Medical+College+Rajahmundry' },
         { name: 'Dr. Vani Skin Clinic', degree: 'MBBS, DD', avatar: 'VSC', clinic: 'Vani Skin Clinic, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Vani+Skin+Clinic+Bhimavaram' },
+        { name: 'Dr. Srikanth', degree: 'MD, DVL', avatar: 'Srika', clinic: 'Srikanth Skin Clinic, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Srikanth+Skin+Clinic+Bhimavaram' },
+        { name: 'Dr. N. Kumar', degree: 'MBBS, DDVL', avatar: 'NKumD', clinic: 'Kumar Skin Care, Bhimavaram', lat: 16.5449, lon: 81.5212, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Kumar+Skin+Care+Bhimavaram' },
         { name: 'Dr. Radha Shah', degree: 'MD, DNB', avatar: 'RShah', clinic: 'Apollo Hospitals, Hyderabad', lat: 17.437, lon: 78.448, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Hospitals+Jubilee+Hills' },
         { name: 'Dr. Inshad', degree: 'MBBS, MD', avatar: 'Inshad', clinic: 'Kaya Skin Clinic, Hyderabad', lat: 17.411, lon: 78.46, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Kaya+Skin+Clinic+Banjara+Hills' },
         { name: 'Dr. Rashmi Sharma', degree: 'MD, DNB', avatar: 'RSha', clinic: 'Continental Hospitals, Hyderabad', lat: 17.458, lon: 78.36, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Continental+Hospitals+Gachibowli' },
@@ -421,12 +439,13 @@ export default function DoctorFlowchart() {
         setCityName(displayCity);
         
         if (activeLocation) {
-            const searchCityTerm = manualCityInput.trim().toLowerCase();
+            const searchCityTerm = (manualLocation?.city.split(',')[0] || manualCityInput || '').trim().toLowerCase();
 
             newSpecs.forEach((spec: any) => {
                 spec.doctors = spec.doctors
                     .filter((doc: any) => {
                         const clinicCity = doc.clinic.toLowerCase();
+                        // Make matching more flexible
                         return clinicCity.includes(searchCityTerm);
                     })
                     .map((doc: any) => ({

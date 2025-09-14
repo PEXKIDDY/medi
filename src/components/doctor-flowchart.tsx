@@ -65,6 +65,7 @@ const initialSpecializations = [
       { name: 'Dr. Priya Sharma', degree: 'MD, Cardiology', avatar: 'PS', clinic: 'Apollo Hospitals', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Hospitals+Bangalore' }, 
       { name: 'Dr. Rohan Mehra', degree: 'DM, Cardiology', avatar: 'RM', clinic: 'Fortis Malar', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Fortis+Malar+Hospital+Chennai' },
       { name: 'Dr. Srinivas Kumar', degree: 'MD, DM (Cardio)', avatar: 'SK', clinic: 'SVIMS, Tirupati', lat: 13.6288, lon: 79.4192, locationUrl: 'https://www.google.com/maps/search/?api=1&query=SVIMS+Tirupati' },
+      { name: 'Dr. Ashok Reddy', degree: 'DM, Cardiology', avatar: 'AR', clinic: 'Apollo Hospitals, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Hospitals+Nellore' },
     ],
   },
   {
@@ -73,6 +74,7 @@ const initialSpecializations = [
       { name: 'Dr. Vikram Singh', degree: 'DM, Neurology', avatar: 'VS', clinic: 'Manipal Hospital', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Manipal+Hospital+Old+Airport+Road+Bangalore' }, 
       { name: 'Dr. Sneha Patel', degree: 'MD, Neurology', avatar: 'SP', clinic: 'Global Hospitals', lat: 13.0827, lon: 80.2707, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Global+Hospital+Perumbakkam+Chennai' },
       { name: 'Dr. Ravi Varma', degree: 'MD, DM (Neuro)', avatar: 'RV', clinic: 'Apollo Hospitals, Tirupati', lat: 13.6288, lon: 79.4192, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Hospitals+Tirupati' },
+      { name: 'Dr. Kishore Kumar', degree: 'DM (Neuro)', avatar: 'KK', clinic: 'Narayana Hospital, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Narayana+Hospital+Nellore' },
     ],
   },
   {
@@ -81,6 +83,7 @@ const initialSpecializations = [
       { name: 'Dr. Divya Rao', degree: 'MS, Ortho', avatar: 'DR', clinic: 'Sakra World Hospital', lat: 12.9716, lon: 77.5946, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sakra+World+Hospital+Bangalore' }, 
       { name: 'Dr. G. Jagadesh', degree: 'MS (Ortho)', avatar: 'GJ', clinic: 'BIRRD Hospital, Tirupati', lat: 13.6288, lon: 79.4192, locationUrl: 'https://www.google.com/maps/search/?api=1&query=BIRRD+Hospital+Tirupati' },
       { name: 'Dr. Pooja Desai', degree: 'MS, Ortho', avatar: 'PD', clinic: 'Sunshine Hospitals', lat: 17.3850, lon: 78.4867, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sunshine+Hospitals+Secunderabad+Hyderabad' },
+      { name: 'Dr. Venkat Rao', degree: 'MS, Ortho', avatar: 'VR', clinic: 'Simhapuri Hospital, Nellore', lat: 14.4426, lon: 79.9865, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Simhapuri+Hospital+Nellore' },
     ],
   },
    {
@@ -180,7 +183,8 @@ export default function DoctorFlowchart() {
       .then(data => {
         if (data && data.length > 0) {
           const result = data[0];
-          const city = result.display_name.split(',')[0].trim();
+          const displayNameParts = result.display_name.split(',');
+          const city = displayNameParts.length > 3 ? displayNameParts[displayNameParts.length - 4].trim() : displayNameParts[0].trim();
           setManualLocation({ latitude: parseFloat(result.lat), longitude: parseFloat(result.lon), city: city });
         } else {
           setSearchError(`Could not find location for "${manualCityInput}". Please try another city.`);
@@ -230,9 +234,11 @@ export default function DoctorFlowchart() {
                     ...doc,
                     distance: getDistance(activeLocation.latitude, activeLocation.longitude, doc.lat, doc.lon),
                 }));
+                
+                const searchCity = currentCity?.toLowerCase() || '';
 
-                if (currentCity?.toLowerCase() === 'tirupati') {
-                    spec.doctors = spec.doctors.filter((doc: any) => doc.clinic.toLowerCase().includes('tirupati'));
+                if (searchCity === 'tirupati' || searchCity === 'nellore') {
+                    spec.doctors = spec.doctors.filter((doc: any) => doc.clinic.toLowerCase().includes(searchCity));
                 } else {
                     spec.doctors.sort((a: any, b: any) => a.distance - b.distance);
                     spec.doctors = spec.doctors.slice(0, 3);
@@ -380,3 +386,5 @@ export default function DoctorFlowchart() {
     </div>
   );
 }
+
+    

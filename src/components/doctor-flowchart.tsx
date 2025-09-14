@@ -120,6 +120,7 @@ const initialSpecializations = [
       { name: 'Dr. B. Rajendra Prasad', degree: 'MD, DM', avatar: 'BRP', clinic: 'Manipal Hospitals, Vijayawada', lat: 16.518, lon: 80.622, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Manipal+Hospitals+Vijayawada' },
       { name: 'Dr. G. Satyanarayana', degree: 'MD, DM', avatar: 'GSa', clinic: 'King George Hospital, Visakhapatnam', lat: 17.7126, lon: 83.2984, locationUrl: 'https://www.google.com/maps/search/?api=1&query=King+George+Hospital+Visakhapatnam' },
       { name: 'Dr. K. Vijaya', degree: 'DM (Neuro)', avatar: 'KV', clinic: 'SevenHills Hospital, Visakhapatnam', lat: 17.74, lon: 83.31, locationUrl: 'https://www.google.com/maps/search/?api=1&query=SevenHills+Hospital+Visakhapatnam' },
+      { name: 'Dr. N. Ramachandra', degree: 'MD, DM', avatar: 'NR', clinic: 'Guntur Medical College, Guntur', lat: 16.306, lon: 80.43, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Guntur+Medical+College' }
     ],
   },
   {
@@ -147,6 +148,7 @@ const initialSpecializations = [
       { name: 'Dr. V. N. Reddy', degree: 'MS (Ortho)', avatar: 'VNR', clinic: 'Santhiram Medical College, Nandyal', lat: 15.4807, lon: 78.4862, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Santhiram+Medical+College+Nandyal' },
       { name: 'Dr. J. Naresh Babu', degree: 'MS (Ortho)', avatar: 'JNB', clinic: 'Apollo Hospitals, Visakhapatnam', lat: 17.738, lon: 83.318, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Hospitals+Health+City+Visakhapatnam' },
       { name: 'Dr. T. S. Rao', degree: 'MS (Ortho)', avatar: 'TSRao', clinic: 'King George Hospital, Visakhapatnam', lat: 17.7126, lon: 83.2984, locationUrl: 'https://www.google.com/maps/search/?api=1&query=King+George+Hospital+Visakhapatnam' },
+      { name: 'Dr. M. Sridhar', degree: 'MS (Ortho)', avatar: 'MSri', clinic: 'Govt. General Hospital, Guntur', lat: 16.306, lon: 80.43, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+General+Hospital+Guntur' }
     ],
   },
    {
@@ -176,6 +178,7 @@ const initialSpecializations = [
         { name: 'Dr. R. Madhavi', degree: 'DNB, DCH', avatar: 'RMa', clinic: 'Aravinda Hospital, Kadapa', lat: 14.4668, lon: 78.8222, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Aravinda+Hospital+Kadapa' },
         { name: 'Dr. V. Nagabhushanam', degree: 'MD (Peds)', avatar: 'VNa', clinic: 'Nagabhushanam Childrens Hospital, Rajahmundry', lat: 17.0005, lon: 81.8040, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Nagabhushanam+Childrens+Hospital+Rajahmundry' },
         { name: 'Dr. P.V. Rama Rao', degree: 'MD, DCH', avatar: 'PVRR', clinic: 'Apollo Hospitals, Visakhapatnam', lat: 17.738, lon: 83.318, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Hospitals+Health+City+Visakhapatnam' },
+        { name: 'Dr. R. Ravi Kumar', degree: 'MD, DCH', avatar: 'RRK', clinic: 'Govt. General Hospital, Guntur', lat: 16.306, lon: 80.43, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+General+Hospital+Guntur' }
     ],
   },
   {
@@ -205,6 +208,7 @@ const initialSpecializations = [
         { name: 'Dr. G. Lakshmi', degree: 'MS (OBG)', avatar: 'GLak', clinic: 'Govt. Hospital, Chittoor', lat: 13.2173, lon: 79.1005, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+Hospital+Chittoor' },
         { name: 'Dr. N. Rajyalakshmi', degree: 'MS (OBG)', avatar: 'NRaj', clinic: 'RIMS, Kadapa', lat: 14.475, lon: 78.825, locationUrl: 'https://www.google.com/maps/search/?api=1&query=RIMS+General+Hospital+Kadapa' },
         { name: 'Dr. M. Aruna', degree: 'MD (OBG)', avatar: 'MAr', clinic: 'King George Hospital, Visakhapatnam', lat: 17.7126, lon: 83.2984, locationUrl: 'https://www.google.com/maps/search/?api=1&query=King+George+Hospital+Visakhapatnam' },
+        { name: 'Dr. N. Annapurna', degree: 'MS (OBG)', avatar: 'NA', clinic: 'St. Joseph\'s Hospital, Guntur', lat: 16.306, lon: 80.44, locationUrl: 'https://www.google.com/maps/search/?api=1&query=St.+Joseph\'s+General+Hospital,+Guntur' }
     ],
   },
   {
@@ -234,6 +238,7 @@ const initialSpecializations = [
         { name: 'Dr. Venkat Reddy', degree: 'DMRD', avatar: 'VRe', clinic: 'Govt. Hospital, Rajahmundry', lat: 17.0005, lon: 81.8040, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+Hospital+Rajahmundry' },
         { name: 'Dr. K. Surendra', degree: 'MD (Radiology)', avatar: 'KSu', clinic: 'RIMS, Kadapa', lat: 14.475, lon: 78.825, locationUrl: 'https://www.google.com/maps/search/?api=1&query=RIMS+General+Hospital+Kadapa' },
         { name: 'Dr. P. Sridhar', degree: 'MD, DNB (Radio)', avatar: 'PSri', clinic: 'King George Hospital, Visakhapatnam', lat: 17.7126, lon: 83.2984, locationUrl: 'https://www.google.com/maps/search/?api=1&query=King+George+Hospital+Visakhapatnam' },
+        { name: 'Dr. S.V.S.S. Murthy', degree: 'MD, RD', avatar: 'SVSM', clinic: 'Govt. General Hospital, Guntur', lat: 16.306, lon: 80.43, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+General+Hospital+Guntur' }
     ],
   },
   {
@@ -263,6 +268,7 @@ const initialSpecializations = [
         { name: 'Dr. N. Chandrasekhar', degree: 'MS', avatar: 'NChan', clinic: 'Govt. Hospital, Rajahmundry', lat: 17.0005, lon: 81.8040, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+Hospital+Rajahmundry' },
         { name: 'Dr. T. Narayana Rao', degree: 'MS, FICS', avatar: 'TNR', clinic: 'King George Hospital, Visakhapatnam', lat: 17.7126, lon: 83.2984, locationUrl: 'https://www.google.com/maps/search/?api=1&query=King+George+Hospital+Visakhapatnam' },
         { name: 'Dr. P. Raghu Ram', degree: 'MS, FRCS', avatar: 'PRR', clinic: 'KIMS-Ushalakshmi Centre, Hyderabad', lat: 17.424, lon: 78.448, locationUrl: 'https://www.google.com/maps/search/?api=1&query=KIMS-Ushalakshmi+Centre+for+Breast+Diseases' },
+        { name: 'Dr. G.V. Rao', degree: 'MS (Gen Surg)', avatar: 'GVRao', clinic: 'Sai Hospitals, Guntur', lat: 16.309, lon: 80.45, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sai+Hospitals+Guntur' }
     ],
   },
   {
@@ -323,6 +329,8 @@ const initialSpecializations = [
         { name: 'Dr. L. S. Rao', degree: 'MD, DVL', avatar: 'LSRao', clinic: 'RIMS, Kadapa', lat: 14.475, lon: 78.825, locationUrl: 'https://www.google.com/maps/search/?api=1&query=RIMS+General+Hospital+Kadapa' },
         { name: 'Dr. M. Sailaja', degree: 'MD, DVL', avatar: 'MSai', clinic: 'Sailaja Skin Clinic, Rajahmundry', lat: 17.0005, lon: 81.8040, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Sailaja+Skin+Clinic+Rajahmundry' },
         { name: 'Dr. K. Padmaja', degree: 'MD, DVL', avatar: 'KPad', clinic: 'Padmaja Skin Clinic, Visakhapatnam', lat: 17.735, lon: 83.325, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Padmaja+Skin+Clinic+Visakhapatnam' },
+        { name: 'Dr. V. Lakshmi', degree: 'MBBS, DD', avatar: 'VL', clinic: 'Lakshmi Skin Clinic, Guntur', lat: 16.306, lon: 80.44, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Lakshmi+Skin+Clinic+Guntur' },
+        { name: 'Dr. P. Sivakumar', degree: 'MD, DVL', avatar: 'PSiva', clinic: 'Siva Skin Clinic, Guntur', lat: 16.309, lon: 80.45, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Siva+Skin+Clinic+Guntur' }
     ],
   },
 ];

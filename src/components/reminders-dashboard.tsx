@@ -39,7 +39,9 @@ const appointmentSchema = z.object({
   doctor: z.string().min(1, "Doctor name is required."),
   specialization: z.string().min(1, "Specialization is required."),
   location: z.string().min(1, "Location is required."),
-  dateTime: z.string().min(1, "Date and time are required.")
+  dateTime: z.string().min(1, "Date and time are required.").refine(val => !isNaN(Date.parse(val)), {
+    message: "Invalid date and time."
+  })
 });
 
 const hydrationSchema = z.object({
@@ -57,7 +59,7 @@ const weekDays = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
 export default function RemindersDashboard() {
   const [medications, setMedications] = useState<Medication[]>([
-    { id: 1, name: 'Lisinopril', dosage: '10mg', time: '08:00', taken: true, recurrenceType: 'daily' },
+    { id: 1, name: 'Lisinopril', dosage: '10mg', time: '08:00', taken: true, recurrenceType: 'daily', recurrenceDays: weekDays },
     { id: 2, name: 'Metformin', dosage: '500mg', time: '20:00', taken: false, recurrenceType: 'custom', recurrenceDays: ['mon', 'wed', 'fri'] },
   ]);
   const [appointments, setAppointments] = useState<Appointment[]>([
@@ -73,8 +75,8 @@ export default function RemindersDashboard() {
     resolver: zodResolver(medicationSchema),
     defaultValues: { recurrenceType: 'daily', recurrenceDays: [] }
   });
-  const { register: apptRegister, handleSubmit: handleApptSubmit, reset: apptReset, formState: { errors: apptErrors } } = useForm({ resolver: zodResolver(appointmentSchema) });
-  const { register: hydroRegister, handleSubmit: handleHydroSubmit, reset: hydroReset, formState: { errors: hydroErrors } } = useForm({ resolver: zodResolver(hydrationSchema) });
+  const { register: apptRegister, handleSubmit: handleApptSubmit, reset: apptReset, formState: { errors: apptErrors } } = useForm<z.infer<typeof appointmentSchema>>({ resolver: zodResolver(appointmentSchema) });
+  const { register: hydroRegister, handleSubmit: handleHydroSubmit, reset: hydroReset, formState: { errors: hydroErrors } } = useForm<z.infer<typeof hydrationSchema>>({ resolver: zodResolver(hydrationSchema) });
   
   const [isMedDialogOpen, setMedDialogOpen] = useState(false);
   const [isApptDialogOpen, setApptDialogOpen] = useState(false);
@@ -87,7 +89,6 @@ export default function RemindersDashboard() {
   const recurrenceType = watch('recurrenceType');
 
   useEffect(() => {
-    // Initialize Audio on client
     if (typeof window !== 'undefined' && !audioRef.current) {
         audioRef.current = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
         audioRef.current.loop = true;
@@ -119,8 +120,7 @@ export default function RemindersDashboard() {
         }
     };
     
-    // Check every minute
-    const intervalId = setInterval(checkReminders, 60000);
+    const intervalId = setInterval(checkReminders, 1000); // Check every second
 
     return () => clearInterval(intervalId);
   }, [medications, hydration, activeAlarm, alarmsEnabled]);
@@ -157,13 +157,13 @@ export default function RemindersDashboard() {
 
   const addAppointment = (data: z.infer<typeof appointmentSchema>) => {
     setAppointments([...appointments, { ...data, id: Date.now() }]);
-    apptReset();
+    apptReset({ doctor: '', specialization: '', location: '', dateTime: '' });
     setApptDialogOpen(false);
   };
   
   const addHydration = (data: z.infer<typeof hydrationSchema>) => {
     setHydration([...hydration, { ...data, id: Date.now(), taken: false }]);
-    hydroReset();
+    hydroReset({ amount: '', time: '' });
     setHydroDialogOpen(false);
   };
   
@@ -191,9 +191,8 @@ export default function RemindersDashboard() {
   }
 
   const getRecurrenceText = (med: Medication) => {
-    if (med.recurrenceType === 'daily') return 'Daily';
+    if (med.recurrenceType === 'daily' || (med.recurrenceDays && med.recurrenceDays.length === 7)) return 'Daily';
     if (med.recurrenceType === 'custom' && med.recurrenceDays) {
-        if(med.recurrenceDays.length === 7) return 'Daily';
         if(med.recurrenceDays.length === 2 && med.recurrenceDays.includes('sat') && med.recurrenceDays.includes('sun')) return 'Weekends';
         if(med.recurrenceDays.length === 5 && !med.recurrenceDays.includes('sat') && !med.recurrenceDays.includes('sun')) return 'Weekdays';
         return med.recurrenceDays.map(d => d.charAt(0).toUpperCase() + d.slice(1)).join(', ');
@@ -251,7 +250,7 @@ export default function RemindersDashboard() {
                   <CardTitle>Medication Schedule</CardTitle>
                   <CardDescription>Don&apos;t miss a dose. Add your medications here.</CardDescription>
                 </div>
-                <Dialog open={isMedDialogOpen} onOpenChange={setMedDialogOpen}>
+                <Dialog open={isMedDialogOpen} onOpenChange={(isOpen) => { setMedDialogOpen(isOpen); if(!isOpen) medReset(); }}>
                     <DialogTrigger asChild>
                       <Button><PlusCircle className="mr-2"/>Add Medication</Button>
                     </DialogTrigger>
@@ -312,7 +311,7 @@ export default function RemindersDashboard() {
                             )}
 
                             <DialogFooter>
-                                <DialogClose asChild><Button type="button" variant="secondary" onClick={() => medReset()}>Cancel</Button></DialogClose>
+                                <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
                                 <Button type="submit">Add Reminder</Button>
                             </DialogFooter>
                         </form>
@@ -349,7 +348,7 @@ export default function RemindersDashboard() {
                     <CardTitle>Upcoming Appointments</CardTitle>
                     <CardDescription>Keep track of your doctor visits.</CardDescription>
                   </div>
-                  <Dialog open={isApptDialogOpen} onOpenChange={setApptDialogOpen}>
+                  <Dialog open={isApptDialogOpen} onOpenChange={(isOpen) => { setApptDialogOpen(isOpen); if(!isOpen) apptReset(); }}>
                       <DialogTrigger asChild>
                         <Button><PlusCircle className="mr-2"/>Add Appointment</Button>
                       </DialogTrigger>
@@ -413,7 +412,7 @@ export default function RemindersDashboard() {
                     <CardTitle>Hydration Tracker</CardTitle>
                     <CardDescription>Remember to drink water throughout the day.</CardDescription>
                   </div>
-                  <Dialog open={isHydroDialogOpen} onOpenChange={setHydroDialogOpen}>
+                  <Dialog open={isHydroDialogOpen} onOpenChange={(isOpen) => { setHydroDialogOpen(isOpen); if(!isOpen) hydroReset(); }}>
                       <DialogTrigger asChild>
                         <Button><PlusCircle className="mr-2"/>Add Water Reminder</Button>
                       </DialogTrigger>

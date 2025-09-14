@@ -445,13 +445,6 @@ export default function DoctorFlowchart() {
                 spec.doctors.sort((a: any, b: any) => a.distance - b.distance);
                 return spec;
             });
-
-            // Sort specializations to show ones with doctors first
-            newSpecs.sort((a: any, b: any) => {
-                if (a.doctors.length > 0 && b.doctors.length === 0) return -1;
-                if (a.doctors.length === 0 && b.doctors.length > 0) return 1;
-                return 0;
-            });
         }
         setSpecializations(newSpecs);
         setLoadingCity(false);
@@ -464,8 +457,6 @@ export default function DoctorFlowchart() {
         newSpecs.forEach((spec: any) => {
           spec.doctors.forEach((doc: any) => delete doc.distance);
         });
-        // Reset sort order to default
-        newSpecs.sort((a: any, b: any) => initialSpecializations.findIndex(s => s.name === a.name) - initialSpecializations.findIndex(s => s.name === b.name));
         setSpecializations(newSpecs);
         setCityName(null);
     }
@@ -589,3 +580,5 @@ export default function DoctorFlowchart() {
     </div>
   );
 }
+
+    

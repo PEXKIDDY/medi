@@ -79,7 +79,7 @@ export default function MediInfoPage() {
         try {
             const result = await identifyMedicine({ imageDataUri: dataUri });
             if (result.medicationName.toLowerCase() === 'unknown') {
-                setError("Could not identify the medication from the image. Please try again with a clearer picture or type the name manually.");
+                setError("Medicine not found. Please try again.");
             } else {
                 setResult({
                     medicationName: result.medicationName,

@@ -22,6 +22,7 @@ export default function MediInfoPage() {
     const [result, setResult] = useState<Result | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+    const [isScannerOpen, setScannerOpen] = useState(false);
 
     const { toast } = useToast();
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -29,6 +30,15 @@ export default function MediInfoPage() {
 
 
     useEffect(() => {
+        if (!isScannerOpen) {
+            if (videoRef.current && videoRef.current.srcObject) {
+                const stream = videoRef.current.srcObject as MediaStream;
+                stream.getTracks().forEach(track => track.stop());
+                videoRef.current.srcObject = null;
+            }
+            return;
+        };
+
         const getCameraPermission = async () => {
           try {
             const stream = await navigator.mediaDevices.getUserMedia({video: true});
@@ -51,7 +61,7 @@ export default function MediInfoPage() {
                 stream.getTracks().forEach(track => track.stop());
             }
         }
-      }, []);
+      }, [isScannerOpen]);
 
     const handleSearch = async () => {
         if (!medicationName.trim()) {
@@ -75,6 +85,7 @@ export default function MediInfoPage() {
         setIsLoading(true);
         setResult(null);
         setError(null);
+        setScannerOpen(false);
         setMedicationName('');
         try {
             const result = await identifyMedicine({ imageDataUri: dataUri });
@@ -122,6 +133,12 @@ export default function MediInfoPage() {
             }
         }
     };
+    
+    const openScanner = () => {
+        setScannerOpen(true);
+        setError(null);
+        setResult(null);
+    }
 
     return (
         <>
@@ -170,34 +187,46 @@ export default function MediInfoPage() {
                                 <CardTitle className="flex items-center gap-2"><Camera/>Scan or Upload</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className='relative'>
-                                    <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
-                                    {hasCameraPermission === false && (
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 rounded-md">
-                                            <Camera className="h-12 w-12 text-muted-foreground" />
-                                            <p className="text-muted-foreground mt-2">Camera access is required.</p>
+                                {isScannerOpen ? (
+                                    <>
+                                        <div className='relative'>
+                                            <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
+                                            {hasCameraPermission === false && (
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 rounded-md">
+                                                    <Camera className="h-12 w-12 text-muted-foreground" />
+                                                    <p className="text-muted-foreground mt-2">Camera access is required.</p>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
 
-                                { hasCameraPermission === false && (
-                                    <Alert variant="destructive">
-                                        <AlertTitle>Camera Access Denied</AlertTitle>
-                                        <AlertDescription>
-                                            Please enable camera permissions in your browser settings to use the scanning feature.
-                                        </AlertDescription>
-                                    </Alert>
+                                        { hasCameraPermission === false && (
+                                            <Alert variant="destructive">
+                                                <AlertTitle>Camera Access Denied</AlertTitle>
+                                                <AlertDescription>
+                                                    Please enable camera permissions in your browser settings to use the scanning feature.
+                                                </AlertDescription>
+                                            </Alert>
+                                        )}
+                                        <div className="flex gap-4">
+                                            <Button onClick={handleScan} disabled={isLoading || !hasCameraPermission} className="w-full">
+                                                <Camera className="mr-2"/> Capture
+                                            </Button>
+                                            <Button onClick={() => setScannerOpen(false)} disabled={isLoading} variant="outline" className="w-full">
+                                                Cancel
+                                            </Button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="flex gap-4">
+                                        <Button onClick={openScanner} disabled={isLoading} className="w-full">
+                                            <Camera className="mr-2"/> Scan Medicine
+                                        </Button>
+                                        <Button onClick={() => fileInputRef.current?.click()} disabled={isLoading} className="w-full" variant="outline">
+                                            <Upload className="mr-2"/> Upload Image
+                                        </Button>
+                                        <Input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="image/*" />
+                                    </div>
                                 )}
-
-                                <div className="flex gap-4">
-                                    <Button onClick={handleScan} disabled={isLoading || !hasCameraPermission} className="w-full">
-                                        <Camera className="mr-2"/> Scan Medicine
-                                    </Button>
-                                    <Button onClick={() => fileInputRef.current?.click()} disabled={isLoading} className="w-full" variant="outline">
-                                        <Upload className="mr-2"/> Upload Image
-                                    </Button>
-                                    <Input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="image/*" />
-                                </div>
                             </CardContent>
                         </Card>
                     </div>

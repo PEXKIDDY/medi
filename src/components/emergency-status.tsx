@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import { getEmergencyUpdates, GetEmergencyUpdatesOutput } from '@/app/ai/flows/get-emergency-updates-flow';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -10,10 +11,20 @@ import { Progress } from '@/components/ui/progress';
 const INITIAL_DISTANCE_KM = 15; // Starting distance
 const AVG_SPEED_KM_PER_MIN = 0.8; // Average speed of an ambulance
 
+const getStatusForDistance = (distance: number) => {
+  if (distance > 10) return "Ambulance Dispatched";
+  if (distance > 2) return "Ambulance En Route";
+  if (distance > 0.5) return "Approaching Destination";
+  if (distance > 0) return "Arriving at Hospital";
+  return "Arrived";
+};
+
+
 export default function EmergencyStatus() {
   const [updates, setUpdates] = useState<GetEmergencyUpdatesOutput[]>([]);
   const [isFetchingUpdate, setIsFetchingUpdate] = useState(true);
   const [currentDistance, setCurrentDistance] = useState<number>(INITIAL_DISTANCE_KM);
+  const lastStatusRef = useRef<string | null>(null);
 
   useEffect(() => {
     const fetchUpdate = async (distance: number) => {
@@ -22,26 +33,41 @@ export default function EmergencyStatus() {
         const time = distance / AVG_SPEED_KM_PER_MIN;
         const newUpdate = await getEmergencyUpdates({ distance, time });
         setUpdates(prev => [newUpdate, ...prev.slice(0, 4)]);
+        lastStatusRef.current = newUpdate.status;
       } catch (e) {
         console.error("Failed to get emergency update:", e);
+        // Add a fallback update in case of API error
+        const timeToArrival = Math.round(distance / AVG_SPEED_KM_PER_MIN);
+        const fallbackUpdate: GetEmergencyUpdatesOutput = {
+          status: getStatusForDistance(distance),
+          updateMessage: "The team is on their way. Please remain as calm as possible.",
+          eta: `${timeToArrival} minutes`,
+        };
+        setUpdates(prev => [fallbackUpdate, ...prev.slice(0, 4)]);
+        lastStatusRef.current = fallbackUpdate.status;
       } finally {
         setIsFetchingUpdate(false);
       }
     };
-
+    
     // Fetch initial update
     fetchUpdate(INITIAL_DISTANCE_KM);
 
-    // Set up interval to simulate ambulance movement and fetch new updates
+    // Set up interval to simulate ambulance movement
     const intervalId = setInterval(() => {
       setCurrentDistance(prevDistance => {
-        const newDistance = Math.max(0, prevDistance - (AVG_SPEED_KM_PER_MIN * (10 / 60))); // Update every 10 seconds
-        if (newDistance > 0) {
+        const newDistance = Math.max(0, prevDistance - (AVG_SPEED_KM_PER_MIN * (10 / 60))); // Simulate movement every 10 seconds
+        
+        const currentStatus = getStatusForDistance(prevDistance);
+        const newStatus = getStatusForDistance(newDistance);
+        
+        // Only fetch a new update from the AI if the status has changed
+        if (newStatus !== currentStatus && newStatus !== lastStatusRef.current) {
           fetchUpdate(newDistance);
-        } else {
-           // Once arrived, clear interval and set final state
-          clearInterval(intervalId);
-          fetchUpdate(0);
+        }
+        
+        if (newDistance <= 0) {
+           clearInterval(intervalId);
         }
         return newDistance;
       });
@@ -49,7 +75,7 @@ export default function EmergencyStatus() {
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
-  }, []); // Empty dependency array ensures this effect runs only once on mount
+  }, []);
 
   const progressPercentage = Math.max(0, Math.min(100, ((INITIAL_DISTANCE_KM - currentDistance) / INITIAL_DISTANCE_KM) * 100));
   const latestUpdate = updates[0];
@@ -58,9 +84,9 @@ export default function EmergencyStatus() {
     <div className="w-full max-w-4xl p-4 md:p-8 space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-center gap-2 text-2xl text-destructive">
-            <Ambulance className="h-8 w-8 animate-pulse" />
-          </div>
+           <div className="flex items-center justify-center gap-2 text-2xl text-destructive">
+             <Ambulance className="h-8 w-8 animate-pulse" />
+           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="relative h-64 w-full rounded-lg overflow-hidden border">

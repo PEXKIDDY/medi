@@ -208,7 +208,7 @@ const initialSpecializations = [
         { name: 'Dr. G. Lakshmi', degree: 'MS (OBG)', avatar: 'GLak', clinic: 'Govt. Hospital, Chittoor', lat: 13.2173, lon: 79.1005, locationUrl: 'https://www.google.com/maps/search/?api=1&query=Government+Hospital+Chittoor' },
         { name: 'Dr. N. Rajyalakshmi', degree: 'MS (OBG)', avatar: 'NRaj', clinic: 'RIMS, Kadapa', lat: 14.475, lon: 78.825, locationUrl: 'https://www.google.com/maps/search/?api=1&query=RIMS+General+Hospital+Kadapa' },
         { name: 'Dr. M. Aruna', degree: 'MD (OBG)', avatar: 'MAr', clinic: 'King George Hospital, Visakhapatnam', lat: 17.7126, lon: 83.2984, locationUrl: 'https://www.google.com/maps/search/?api=1&query=King+George+Hospital+Visakhapatnam' },
-        { name: 'Dr. N. Annapurna', degree: 'MS (OBG)', avatar: 'NA', clinic: 'St. Joseph\'s Hospital, Guntur', lat: 16.306, lon: 80.44, locationUrl: 'https://www.google.com/maps/search/?api=1&query=St.+Joseph\'s+General+Hospital,+Guntur' }
+        { name: 'Dr. N. Annapurna', degree: 'MS (OBG)', avatar: 'NA', clinic: 'St. Joseph\'s Hospital, Guntur', lat: 16.306, lon: 80.44, locationUrl: 'https://www.google.com/maps/search/?api=1&query=St.+Joseph%27s+General+Hospital,+Guntur' }
     ],
   },
   {

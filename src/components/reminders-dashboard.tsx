@@ -150,7 +150,7 @@ export default function RemindersDashboard() {
         });
 
         if (dueHydration) {
-            setActiveAlarm({ type: 'hydro', id: dueHydration.id, name: `${h.amount} of water` });
+            setActiveAlarm({ type: 'hydro', id: dueHydration.id, name: `${dueHydration.amount} of water` });
             return;
         }
 
